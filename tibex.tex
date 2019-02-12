@@ -1,0 +1,242 @@
+﻿
+%
+% The Tibetan font definition & glue insertion between
+%       letters and punctuations
+%
+
+\def\TibeX{\hbox{Tib\lower.5ex\hbox{E}\kern-.125em X}}
+
+% Sambhota font family
+\font\SamThug='SambhotaDege:script=tibt;+abvs;+blws' at 42pt
+\font\SamThugu='SambhotaDege:script=tibt;+abvs;+blws' at 36pt
+\font\SamkCig='SambhotaDege:script=tibt;+abvs;+blws' at 26pt
+\font\SamkCigChung='SambhotaDege:script=tibt;+abvs;+blws' at 24pt
+\font\SamkNyis='SambhotaDege:script=tibt;+abvs;+blws' at 22pt
+\font\SamkNyisChung='SambhotaDege:script=tibt;+abvs;+blws' at 20pt
+\font\SamkSum='SambhotaDege:script=tibt;+abvs;+blws' at 18pt
+\font\SamkSumChung='SambhotaDege:script=tibt;+abvs;+blws' at 16pt
+\font\SambZhi='SambhotaDege:script=tibt;+abvs;+blws' at 14pt
+\font\SambZhiChung='SambhotaDege:script=tibt;+abvs;+blws' at 12pt
+\font\SamlNga='SambhotaDege:script=tibt;+abvs;+blws' at 10.5pt
+\font\SamlNgaChung='SambhotaDege:script=tibt;+abvs;+blws' at 9pt
+\let\Sam=\SamkNyisChung \let\sam=\Sam
+\let\SamChe=\SamkNyis
+\let\SamAu=\SamkSum
+
+% Jomolhari font family
+\font\JoThig='Jomolhari:script=tibt;+abvs;+blws' at 42pt
+\font\JoThigu='Jomolhari:script=tibt;+abvs;+blws' at 36pt
+\font\JokCig='Jomolhari:script=tibt;+abvs;+blws' at 26pt
+\font\JokCigChung='Jomolhari:script=tibt;+abvs;+blws' at 24pt
+\font\JokNyis='Jomolhari:script=tibt;+abvs;+blws' at 22pt
+\font\JokNyisChung='Jomolhari:script=tibt;+abvs;+blws' at 18pt
+\font\JokSum='Jomolhari:script=tibt;+abvs;+blws' at 16pt
+\font\JokSumChung='Jomolhari:script=tibt;+abvs;+blws' at 15pt
+\font\JobZhi='Jomolhari:script=tibt;+abvs;+blws' at 14pt
+\font\JobZhiChung='Jomolhari:script=tibt;+abvs;+blws' at 12pt
+\font\JolNga='Jomolhari:script=tibt;+abvs;+blws' at 10.5pt
+\font\JolNgaChung='Jomolhari:script=tibt;+abvs;+blws' at 9pt
+\let\Jo=\JokNyisChung \let\jo=\JokSum
+\let\JoChe=\JokNyis
+\let\JoAu=\JokSum
+
+% 藏研乌坚体 font family
+\font\ZhibThig='藏研乌坚体:script=tibt;+abvs;+blws' at 42pt
+\font\ZhibThigu='藏研乌坚体:script=tibt;+abvs;+blws' at 36pt
+\font\ZhibkCig='藏研乌坚体:script=tibt;+abvs;+blws' at 26pt
+\font\ZhibkCigChung='藏研乌坚体:script=tibt;+abvs;+blws' at 24pt
+\font\ZhibkNyis='藏研乌坚体:script=tibt;+abvs;+blws' at 22pt
+\font\ZhibkNyisChung='藏研乌坚体:script=tibt;+abvs;+blws' at 18pt
+\font\ZhibkSum='藏研乌坚体:script=tibt;+abvs;+blws' at 16pt
+\font\ZhibkSumChung='藏研乌坚体:script=tibt;+abvs;+blws' at 15pt
+\font\ZhibbZhi='藏研乌坚体:script=tibt;+abvs;+blws' at 14pt
+\font\ZhibbZhiChung='藏研乌坚体:script=tibt;+abvs;+blws' at 12pt
+\font\ZhiblNga='藏研乌坚体:script=tibt;+abvs;+blws' at 10.5pt
+\font\ZhiblNgaChung='藏研乌坚体:script=tibt;+abvs;+blws' at 9pt
+\let\Zhib=\ZhibkSum \let\zhib=\ZhibkSum
+\let\ZhibChe=\ZhibkNyis
+
+% glues to be inserted between Tibetan letters & punctuation
+\def\LetterSkip{\nobreak\hskip0em plus.015em minus.003em}
+\def\WordSkip{\hskip0em plus.05em minus.05em}
+\def\BackwordSkip{\hskip.07em plus.03em minus.03em}
+\def\SentenceSkip{\hskip.6em plus.3em minus.3em}
+\let\ss=\SentenceSkip
+\let\bws=\BackwordSkip
+\let\nb=\nobreak
+\let\ls=\LetterSkip
+
+% clear XeTeX pre-defined toks
+  \XeTeXinterchartoks 0 1 = {}  
+  \XeTeXinterchartoks 0 2 = {}  
+  \XeTeXinterchartoks 0 3 = {}  
+  \XeTeXinterchartoks 1 0 = {}  
+  \XeTeXinterchartoks 2 0 = {}  
+  \XeTeXinterchartoks 3 0 = {}  
+  \XeTeXinterchartoks 1 1 = {}  
+  \XeTeXinterchartoks 1 2 = {}  
+  \XeTeXinterchartoks 1 3 = {}  
+  \XeTeXinterchartoks 2 1 = {}  
+  \XeTeXinterchartoks 2 2 = {}
+  \XeTeXinterchartoks 2 3 = {}
+  \XeTeXinterchartoks 3 1 = {}
+  \XeTeXinterchartoks 3 2 = {}
+  \XeTeXinterchartoks 3 3 = {}
+
+\newcount\n
+% 一个藏文字符位置上的最上面的部分是 class 4
+\n="F40 \loop \ifnum\n<"F6D \global\XeTeXcharclass\n=4 \advance\n by 1\repeat
+% 元音以及梵文的长音符号是 class 5
+\n="F91 \loop \ifnum\n<"FBC \global\XeTeXcharclass\n=5 \advance\n by 1\repeat
+% 一个藏文字符位置上的其他的部分是 class 6
+\n="F71 \loop \ifnum\n<"F82 \global\XeTeXcharclass\n=6 \advance\n by 1\repeat
+% 有后面的长脚的字母是 class 7
+\XeTeXcharclass `\ཀ = 7
+\XeTeXcharclass `\ག = 7
+\XeTeXcharclass `\ཤ = 7
+
+\XeTeXinterchartoks 4 4 = {\LetterSkip}
+\XeTeXinterchartoks 4 7 = {\LetterSkip}
+\XeTeXinterchartoks 7 4 = {\LetterSkip}
+\XeTeXinterchartoks 7 7 = {\LetterSkip}
+
+\XeTeXinterchartoks 5 4 = {\LetterSkip}
+\XeTeXinterchartoks 5 7 = {\LetterSkip}
+\XeTeXinterchartoks 6 4 = {\LetterSkip}
+\XeTeXinterchartoks 6 7 = {\LetterSkip}
+
+% 分隔两个音节的标点་ 是 class 12
+\XeTeXcharclass `\་ = 12
+\XeTeXinterchartoks 12 4 = {\WordSkip}
+\XeTeXinterchartoks 12 7 = {\WordSkip}
+\XeTeXinterchartoks 4 12 = {\nobreak\WordSkip}
+\XeTeXinterchartoks 7 12 = {\nobreak\WordSkip}
+\XeTeXinterchartoks 5 12 = {\nobreak\WordSkip}
+\XeTeXinterchartoks 6 12 = {\nobreak\WordSkip}
+
+% 表示一句结束的标点། 是 class 11
+\XeTeXcharclass `\། = 11
+% 藏文中出现在།之后的空格、回车和制表符需要作特殊处理，因为这是一句的结束
+% 用\XeTeXinterchartoks 来定义不知何故无用，因此改用sed来替换添加glue
+%\XeTeXcharclass `\  = 10
+%\XeTeXcharclass `\^^J = 10
+%\XeTeXcharclass `\^^I = 10
+
+%\XeTeXinterchartoks 11 10 = {\SentenceSkip\message{Space after shad}}
+%\XeTeXinterchartoks 7 10 = {\SentenceSkip\message{Space after backfoot}}
+
+\XeTeXinterchartoks 4 11 = {\nobreak\WordSkip}
+\XeTeXinterchartoks 5 11 = {\nobreak\WordSkip}
+\XeTeXinterchartoks 6 11 = {\nobreak\WordSkip}
+\XeTeXinterchartoks 7 11 = {\nobreak\SentenceSkip}
+\XeTeXinterchartoks 12 11 = {\nobreak\WordSkip}
+\XeTeXinterchartoks 11 11 = {\nobreak\SentenceSkip}
+\XeTeXinterchartoks 11 4 = {\BackwordSkip}
+\XeTeXinterchartoks 11 7 = {\BackwordSkip}
+
+\def\NoInterLetterSkip{
+\XeTeXinterchartoks 4 4 = {}
+\XeTeXinterchartoks 4 7 = {}
+\XeTeXinterchartoks 7 4 = {}
+\XeTeXinterchartoks 7 7 = {}
+
+\XeTeXinterchartoks 5 4 = {}
+\XeTeXinterchartoks 5 7 = {}
+\XeTeXinterchartoks 6 4 = {}
+\XeTeXinterchartoks 6 7 = {}
+}
+
+\def\DontSplitDblShad{
+\XeTeXinterchartoks 7 11 = {\nobreak\WordSkip}
+\XeTeXinterchartoks 11 11 = {\nobreak\WordSkip}
+\XeTeXinterchartoks 11 4 = {\SentenceSkip}
+\XeTeXinterchartoks 11 7 = {\SentenceSkip}
+}
+
+\XeTeXinterchartokenstate=1
+
+\RinChenShadLetters=2
+
+\spaceskip=.07em
+\xspaceskip=.07em
+
+\newcount\n \newcount\m \newcount\t
+\newcount\centi \newcount\tens
+\newif\ifspecialtens
+%
+% 把一个小于等于999的数转换成藏文
+%
+\def\tibnumber#1{
+\n=#1
+% calculate the centi digit
+\t=\n \divide\t by 100
+   \m=\t \multiply\m by 100
+   \advance\n by -\m
+% now t contains the centi digit, n contains the lower two
+\ifnum\n=0 % if the lower two digits is 00, the following Tseg is not needed
+  \ifcase\t\or བརྒྱ\or ཉིས་བརྒྱ\or སུམ་བརྒྱ\or བཞི་བརྒྱ\or ལྔ་བརྒྱ\or དྲུག་བརྒྱ
+            \or བདུན་བརྒྱ\or བརྒྱད་བརྒྱ\or དགུ་བརྒྱ\fi\relax
+\else
+  \ifcase\t\or བརྒྱ་\or ཉིས་བརྒྱ་\or སུམ་བརྒྱ་\or བཞི་བརྒྱ་\or ལྔ་བརྒྱ་\or དྲུག་བརྒྱ་
+      \or བདུན་བརྒྱ\or བརྒྱད་བརྒྱ་\or དགུ་བརྒྱ་\fi\relax
+  % calculate the tens digit
+  \t=\n \divide\t by 10
+    \m=\t \multiply\m by 10
+    \advance\n by -\m
+  % now t contains the tens digit
+  \ifnum\n=0 % if the last digit is 0, the following Tseg is not needed either
+    \ifcase\t\or བཅུ\or ཉི་ཤུ\or སུམ་ཅུ\or བཞི་བཅུ\or ལྔ་བཅུ\or དྲུག་ཅུ\or བདུན་ཅུ
+       ུ\or བརྒྱད་ཅུ\or དགུ་བཅུ\fi\relax
+  \else
+    \ifnum\t=1
+        \ifnum\n=5 \specialtenstrue\fi
+        \ifnum\n=8 \specialtenstrue\fi
+        \ifspecialtens བཅྭོ་\else བཅུ་\fi
+    \fi
+    \ifcase\t\or \or ཉེར་\or སོ་\or ཞེ་\or ང་\or རེ་\or དོན་\or གྱ་\or གོ་\fi\relax
+    \ifcase\n\or གཅིག\or གཉིས\or གསུམ\or བཞི\or ལྔ\or དྲུག\or བདུན\or བརྒྱད\or དགུ \fi\relax
+  \fi
+\fi
+}
+
+%
+% 將一个小于等于999的数轉換爲藏文༠-༩的數字表示
+%
+\def\tibdigit#1{
+%        \message{\the#1}
+	\ifcase#1 ༠ \or ༡ \or ༢ \or ༣ \or ༤ \or ༥ \or ༦ \or ༧ \or ༨ \or ༩ \fi\relax
+}
+\newif\ifFirstDigit
+\def\tibfolio#1{
+%\tracingcommands=2
+\FirstDigittrue
+\n=#1
+% calculate the centi digit
+\t=\n \divide\t by 100
+   \m=\t \multiply\m by 100
+   \advance\n by -\m
+% now t contains the centi digit, n contains the lower two
+\ifnum\t=0
+	\relax
+\else
+	\tibdigit{\t}
+	\FirstDigitFalse
+\fi
+% calculate the tens digit
+\t=\n \divide\t by 10
+\m=\t \multiply\m by 10
+\advance\n by -\m
+% now t contains the tens digit
+\ifFirstDigit
+	\ifnum\t=0
+		\relax
+	\else
+		\tibdigit\t
+	\fi
+\else
+	\tibdigit\t
+\fi
+% n contains the last digit
+\tibdigit\n
+%\tracingcommands=0
+}
