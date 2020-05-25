@@ -4,7 +4,7 @@
 %       letters and punctuations
 %
 
-\def\TibeX{\hbox{Tib\lower.5ex\hbox{E}\kern-.125em X}}
+\def\TibeX{\hbox{Tib\kern-.1em \lower.5ex\hbox{E}\kern-.125em X}}
 
 % Sambhota font family
 \font\SamThug='SambhotaDege:script=tibt;+abvs;+blws' at 42pt
@@ -62,6 +62,7 @@
 \def\BackwordSkip{\hskip.07em plus.03em minus.03em}
 \def\SentenceSkip{\hskip.6em plus.3em minus.3em}
 \let\ss=\SentenceSkip
+\let\ws=\WordSkip
 \let\bws=\BackwordSkip
 \let\nb=\nobreak
 \let\ls=\LetterSkip

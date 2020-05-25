@@ -2,14 +2,16 @@
 
 % 缺省的纸张大小为16开
 \pdfpageheight26cm\pdfpagewidth18.4cm
-\vsize=19.3cm\hsize=13.4cm
+\vsize=20.1cm\hsize=13.7cm
 % 对于藏文字体行距需要相应的加大
 \baselineskip=27pt plus 3pt
-
+%
+\font\SamSubt='SambhotaDege:script=tibt;+abvs;+blws' at 21pt
+\font\bigtenrm=cmr10 scaled\magstep2
 % 定义页眉和页脚
 \nopagenumbers
 \voffset=1.0cm
-\maxdepth=20pt
+\maxdepth=0pt
 
 \newif\iftitle
 \def\titlepage{\global\titletrue} % for pages without headlines
@@ -26,12 +28,12 @@
      \makefootline}%
   \advancepageno  
   \ifnum\outputpenalty>-20000 \else\dosupereject\fi}
-
+%
 \def\makeheadline{\vbox to 0pt{
   \vskip-54pt
   \line{\vbox to 20pt{}\the\headline}
   \vss}\nointerlineskip}
-
+%
 \def\headrule{\vbox to 0pt{
   \vskip-17pt
   \line{\leaders\hrule height1.5pt\hfill}
@@ -42,12 +44,14 @@
 }
 \def\makefootline{\baselineskip30pt\lineskiplimit0pt\line{\the\footline}}
 \def\normalpageno{\footline={\hss\tenrm\folio\hss}}
-
+%
 \def\title#1{\centerline{\SamChe #1}}
+\def\subtitle#1{\medskip\centerline{\SamSubt #1}\medskip}
 % Plain TeX中定义的bigskip对藏文来说过小了,因此我们定义一个更大的
 \def\xbigskip{\bigskip\bigskip}
 \def\poem#1{{\leftskip=2cm #1\par}}
-
+\def\romanfittib#1{\bws\lower9pt\hbox{\bigtenrm #1}\bws}
+%
 % 用来排版超长段的命令
 \def\firstpar{\parfillskip=0pt}
 \def\followpar{\noindent\parfillskip=0pt}
