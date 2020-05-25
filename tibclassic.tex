@@ -1,68 +1,69 @@
 ﻿\input tibex
-
+%
 \parindent=0pt
 %\TibPageLines=5
 \newbox\pghdr
 \TibHeaderBox=\pghdr
 \setbox\pghdr=\hbox{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}
-
+%
 \def\orotate#1{\setbox0=\hbox{#1}%
   \special{x:gsave}\special{x:rotate 270}%
   \box0 \special{x:grestore}}
 
 \NoInterLetterSkip
-
+%
 \pdfpageheight9cm\pdfpagewidth29.7cm
 \vsize=5.5cm\hsize=22.5cm
 \voffset=-.6cm
 \hoffset=1.1cm
-\maxdepth=-2pt
+\maxdepth=0pt
 \nopagenumbers
-
+%
 \baselineskip=10.5mm plus1mm
 \lineskip=0mm plus1mm
 \lineskiplimit=0.2mm
 \parskip=0pt
-
-\newdimen\pagewidth \newdimen\pageheight \newdimen\ruleht
-\pagewidth=\hsize \pageheight=\vsize \ruleht=1pt
-\advance\pagewidth by 10pt \advance\pageheight by 8pt
-
+%
+\newdimen\pagewidth \newdimen\pageheight \newdimen\ruleht%
+\newdimen\halfpageht \newdimen\amiddle 
+\def\setpagesize{%
+\pagewidth=\hsize \pageheight=\vsize \ruleht=1pt%
+\halfpageht=\pageheight \divide\halfpageht by 2%
+\advance\halfpageht by .3pc
+\advance\pagewidth by 10pt%
+\advance\pageheight by 10pt\advance\pageheight by \maxdepth%
+}%
+%
 \newcount\totalpages
 \def\pgnuma{\vbox to 0pt{
-  \kern -6pt
-  \hrule height \ruleht
+  \kern -6pt \hrule height \ruleht
+  \amiddle=\halfpageht \advance\amiddle by 2pc
   \hbox to3pc{\vrule height \pageheight width \ruleht
-     \kern 21pt\raise 8.5pc\hbox{\rlap{
+     \kern 21pt\raise\amiddle\hbox{\rlap{
         \orotate{
            \ifodd\pageno
               \ifnum\pageno>0
                   \m=\pageno \advance\m by 1 \divide\m by 2
-                  \Sam %ཞབས་\hfill
-                    \tibnumber\m
+                  \Sam\tibnumber\m
                   \m=\pageno \advance\m by 1 \divide\m by 2
                   \n=\totalpages \advance\n by 1 \divide\n by 2
                   \ifnum\m=\n ་བྱོན། \fi
                   %\hfill བརྟན།
               \fi
            \else
-              \ifnum\pageno=2
-                  \Sam %ཞབས་\hfill
-                    \tibnumber 1
-                  %\hfill བརྟན།
-              \fi
+              \ifnum\pageno=2 \Sam \tibnumber 1\fi
            \fi
         }}}
      \hss\vrule width \ruleht}
   \hrule height \ruleht \vss
 }}
-
+%
 \font\bigrm=cmr10 scaled\magstep2
 \def\pgnumb{\vbox to 0pt{
   \kern -6pt
   \hrule height \ruleht
   \hbox to3pc{\vrule height \pageheight width \ruleht
-        \raise 6pc\hbox to 33pt{\hfil\bigrm \number\pageno\hfil}
+        \raise\halfpageht\hbox to 33pt{\hfil\bigrm \number\pageno\hfil}
      \hss\vrule width \ruleht}
 %\advance\pageno by 1
   \hrule height \ruleht \vss
@@ -70,10 +71,11 @@
 %\hbox to 3pc{\vbox to\pageheight{
 %\hrule\hbox to 35pt{\vrule\vbox to 179pt
 %{\vss T1\vss}}}}
-
+%
 \newif\ifframe
 \framefalse
 \def\onepageout#1{\shipout\vbox{ % here we define one page of output
+\setpagesize
 \offinterlineskip % butt the boxes together
 \ifframe
     \kern -9pt
@@ -93,15 +95,15 @@
   }
   \advancepageno
 }
-
+%
 \output{\onepageout{\unvbox255}}
-
+%
 \def\header{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}
 \setbox\pghdr=\hbox{\header}
-
+%
 \def\titlebox#1{\hbox{\vbox{
 \hrule height1pt\hbox{\vrule width1pt\kern4pc\vrule width1pt
 \vbox{\kern9pt#1\kern9pt}\vrule width1pt\kern4pc\vrule width1pt}\hrule height1pt}
 }}
-
+%
 \Sam
