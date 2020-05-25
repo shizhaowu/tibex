@@ -21,9 +21,6 @@ DamCan : DamCan.pdf
 
 b:b.pdf
     
-#b.tex: b.tbx subtibex.sed
-#	sed -f subtibex.sed b.tbx > b.tex
-
 dwd: dwd.pdf
 
 dk: dk.pdf
