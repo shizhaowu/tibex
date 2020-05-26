@@ -1,7 +1,6 @@
 ﻿\input tibex
 %
 \parindent=0pt
-%\TibPageLines=5
 \newbox\pghdr
 \TibHeaderBox=\pghdr
 \setbox\pghdr=\hbox{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}
@@ -9,23 +8,42 @@
 \def\orotate#1{\setbox0=\hbox{#1}%
   \special{x:gsave}\special{x:rotate 270}%
   \box0 \special{x:grestore}}
-
+%
 \NoInterLetterSkip
 %
-\pdfpageheight9cm\pdfpagewidth29.7cm
-\vsize=5.5cm\hsize=22.5cm
-\voffset=-.6cm
-\hoffset=1.1cm
+\newdimen\dimn%計算hoffset要用的臨時變量
+\def\setpaperhalfa#1%設置紙張大小，半A4/半A3
+{\ifnum#1=4 %Half A4 paper
+   \pdfpageheight90mm\pdfpagewidth297mm%
+   \vsize=55mm\hsize=225mm%
+\else%
+   \ifnum#1=3 %Half A3 paper
+       \pdfpageheight99mm\pdfpagewidth420mm%
+       \vsize=70.5mm\hsize=348mm%
+   \fi%
+\fi
+\dimn=\pdfpagewidth \advance\dimn by -\hsize
+\advance\dimn by -28mm
+\divide\dimn by 2
+\advance\dimn by -11mm
+\hoffset=\dimn
+}
+\setpaperhalfa4%缺省的將紙張設爲半A4
+%
+\voffset=-6mm
 \maxdepth=0pt
 \nopagenumbers
-%
+% 這些與字體相關，應該定義一個宏讓用戶自己設缺省行高
 \baselineskip=10.5mm plus1mm
 \lineskip=0mm plus1mm
 \lineskiplimit=0.2mm
+%
 \parskip=0pt
+\parfillskip=0pt
 %
 \newdimen\pagewidth \newdimen\pageheight \newdimen\ruleht%
 \newdimen\halfpageht \newdimen\amiddle 
+% 變量初始化宏，在\output裡調用
 \def\setpagesize{%
 \pagewidth=\hsize \pageheight=\vsize \ruleht=1pt%
 \halfpageht=\pageheight \divide\halfpageht by 2%
@@ -35,6 +53,7 @@
 }%
 %
 \newcount\totalpages
+% 左頁眉
 \def\pgnuma{\vbox to 0pt{
   \kern -6pt \hrule height \ruleht
   \amiddle=\halfpageht \advance\amiddle by 2pc
@@ -59,6 +78,7 @@
 }}
 %
 \font\bigrm=cmr10 scaled\magstep2
+%右頁眉
 \def\pgnumb{\vbox to 0pt{
   \kern -6pt
   \hrule height \ruleht
@@ -71,9 +91,10 @@
 %\hbox to 3pc{\vbox to\pageheight{
 %\hrule\hbox to 35pt{\vrule\vbox to 179pt
 %{\vss T1\vss}}}}
-%
+% 控制是否顯示邊框及頁眉
 \newif\ifframe
 \framefalse
+%
 \def\onepageout#1{\shipout\vbox{ % here we define one page of output
 \setpagesize
 \offinterlineskip % butt the boxes together
@@ -98,7 +119,7 @@
 %
 \output{\onepageout{\unvbox255}}
 %
-\def\header{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}
+\def\header{{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}}
 \setbox\pghdr=\hbox{\header}
 %
 \def\titlebox#1{\hbox{\vbox{
