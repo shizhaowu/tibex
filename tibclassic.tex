@@ -12,14 +12,16 @@
 \NoInterLetterSkip
 %
 \newdimen\dimn%計算hoffset要用的臨時變量
-\def\setpaperhalfa#1%設置紙張大小，半A4/半A3
+\def\setpaperhalfa#1%設置紙張大小，半A4/三分之一A3
 {\ifnum#1=4 %Half A4 paper
    \pdfpageheight90mm\pdfpagewidth297mm%
    \vsize=55mm\hsize=225mm%
+   \voffset=-8mm
 \else%
-   \ifnum#1=3 %Half A3 paper
+   \ifnum#1=3 %One third A3 paper
        \pdfpageheight99mm\pdfpagewidth420mm%
-       \vsize=70.5mm\hsize=348mm%
+       \vsize=66mm\hsize=348mm%
+       \voffset=-8mm
    \fi%
 \fi
 \dimn=\pdfpagewidth \advance\dimn by -\hsize
@@ -30,7 +32,6 @@
 }
 \setpaperhalfa4%缺省的將紙張設爲半A4
 %
-\voffset=-6mm
 \maxdepth=0pt
 \nopagenumbers
 % 這些與字體相關，應該定義一個宏讓用戶自己設缺省行高

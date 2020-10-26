@@ -7,7 +7,6 @@
 \baselineskip=27pt plus 3pt
 %
 \font\SamSubt='SambhotaDege:script=tibt;+abvs;+blws' at 21pt
-\font\bigtenrm=cmr10 scaled\magstep2
 % 定义页眉和页脚
 \nopagenumbers
 \voffset=1.0cm
@@ -49,8 +48,9 @@
 \def\subtitle#1{\medskip\centerline{\SamSubt #1}\medskip}
 % Plain TeX中定义的bigskip对藏文来说过小了,因此我们定义一个更大的
 \def\xbigskip{\bigskip\bigskip}
-\def\poem#1{{\leftskip=2cm #1\par}}
-\def\romanfittib#1{\bws\lower9pt\hbox{\bigtenrm #1}\bws}
+\newdimen\poemskip
+\def\setpoemskip#1{\poemskip=#1}
+\def\poem#1{{\leftskip=\poemskip #1\par}}
 %
 % 用来排版超长段的命令
 \def\firstpar{\parfillskip=0pt}

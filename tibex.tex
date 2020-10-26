@@ -54,8 +54,10 @@
 \font\ZhiblNga='藏研乌坚体:script=tibt;+abvs;+blws' at 10.5pt
 \font\ZhiblNgaChung='藏研乌坚体:script=tibt;+abvs;+blws' at 9pt
 \let\Zhib=\ZhibkSum \let\zhib=\ZhibkSum
-\let\ZhibChe=\ZhibkNyis
-
+\let\ZhibChe=\ZhibkNyis \let\ZhibAu=\ZhibkSumChung
+%
+\font\bigtenrm=cmr10 scaled\magstep2
+\def\romanfittib#1{\bws\lower9pt\hbox{\bigtenrm #1}\bws}
 % glues to be inserted between Tibetan letters & punctuation
 \def\LetterSkip{\nobreak\hskip0em plus.015em minus.003em}
 \def\WordSkip{\hskip0em plus.05em minus.05em}
