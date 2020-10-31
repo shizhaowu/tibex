@@ -1,9 +1,6 @@
-﻿\input tibex
-%
-\parindent=0pt
-\newbox\pghdr
-\TibHeaderBox=\pghdr
-\setbox\pghdr=\hbox{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}
+\input tibex
+%排版藏文傳統長函書的包
+\parindent=0pt%
 %
 \def\orotate#1{\setbox0=\hbox{#1}%
   \special{x:gsave}\special{x:rotate 270}%
@@ -12,120 +9,269 @@
 \NoInterLetterSkip
 %
 \newdimen\dimn%計算hoffset要用的臨時變量
-\def\setpaperhalfa#1%設置紙張大小，半A4/三分之一A3
-{\ifnum#1=4 %Half A4 paper
-   \pdfpageheight90mm\pdfpagewidth297mm%
-   \vsize=55mm\hsize=225mm%
-   \voffset=-8mm
-\else%
-   \ifnum#1=3 %One third A3 paper
+\def\setpaperhalfa#1{%設置紙張大小，半A4/三分之一A3
+  \ifnum#1=4 %Half A4 paper
+     \pdfpageheight90mm\pdfpagewidth297mm%
+     \vsize=55mm\hsize=225mm%
+     \voffset=-8mm
+  \else%
+     \ifnum#1=3 %One third A3 paper
        \pdfpageheight99mm\pdfpagewidth420mm%
-       \vsize=66mm\hsize=348mm%
-       \voffset=-8mm
-   \fi%
-\fi
-\dimn=\pdfpagewidth \advance\dimn by -\hsize
-\advance\dimn by -28mm
-\divide\dimn by 2
-\advance\dimn by -11mm
-\hoffset=\dimn
-}
+       \vsize=66mm\hsize=366mm%
+       \voffset=-8mm%
+     \fi\fi%
+  \dimn=\pdfpagewidth \advance\dimn by -\hsize%
+  \advance\dimn by -28mm \divide\dimn by 2 %
+  \advance\dimn by -11mm %
+  \hoffset=\dimn %
+}%
 \setpaperhalfa4%缺省的將紙張設爲半A4
 %
-\maxdepth=0pt
-\nopagenumbers
+\maxdepth=0pt%
+\nopagenumbers%
 % 這些與字體相關，應該定義一個宏讓用戶自己設缺省行高
-\baselineskip=10.5mm plus1mm
-\lineskip=0mm plus1mm
-\lineskiplimit=0.2mm
+\baselineskip=10.5mm plus1mm%
+\lineskip=0mm plus1mm%
+\lineskiplimit=0.2mm%
 %
-\parskip=0pt
-\parfillskip=0pt
+\parskip=0pt \parfillskip=0pt%
 %
-\newdimen\pagewidth \newdimen\pageheight \newdimen\ruleht%
-\newdimen\halfpageht \newdimen\amiddle 
+\newdimen\pboxwidth \newdimen\pboxheight \newdimen\ruleht%
+\newdimen\tmpdim %
 % 變量初始化宏，在\output裡調用
-\def\setpagesize{%
-\pagewidth=\hsize \pageheight=\vsize \ruleht=1pt%
-\halfpageht=\pageheight \divide\halfpageht by 2%
-\advance\halfpageht by .3pc
-\advance\pagewidth by 10pt%
-\advance\pageheight by 10pt\advance\pageheight by \maxdepth%
-}%
+\def\setboxsize{%
+  \pboxwidth=\hsize \pboxheight=\vsize \ruleht=1pt%
+  \advance\pboxwidth by 18pt \advance\pboxwidth by 4.6mm%
+  \advance\pboxheight by 9pt \advance\pboxheight by \maxdepth}%
+\def\drawpbox{%用ruleht中所指定的線寬畫pboxwidth*pboxheight方框
+  \hrule height\ruleht width\pboxwidth %上横边1
+  \hbox{%
+    \vrule width\ruleht height\pboxheight%
+    \kern-\ruleht \kern\pboxwidth \kern-\ruleht%
+    \vrule width\ruleht height\pboxheight}%
+  \hrule height\ruleht width\pboxwidth %下横边1
+  }%
+\def\shrinkpbox{%将长宽减去2倍的ruleht
+  \advance\pboxwidth by-\ruleht \advance\pboxwidth by-\ruleht %
+  \advance\pboxheight by-\ruleht \advance\pboxheight by-\ruleht}%
+% 由使用者设置这个变量告诉TibeX在最后一页的正面加上་བྱོན
+\newcount\totalpages \totalpages=0%
 %
-\newcount\totalpages
-% 左頁眉
-\def\pgnuma{\vbox to 0pt{
-  \kern -6pt \hrule height \ruleht
-  \amiddle=\halfpageht \advance\amiddle by 2pc
-  \hbox to3pc{\vrule height \pageheight width \ruleht
-     \kern 21pt\raise\amiddle\hbox{\rlap{
-        \orotate{
-           \ifodd\pageno
-              \ifnum\pageno>0
-                  \m=\pageno \advance\m by 1 \divide\m by 2
-                  \Sam\tibnumber\m
-                  \m=\pageno \advance\m by 1 \divide\m by 2
-                  \n=\totalpages \advance\n by 1 \divide\n by 2
-                  \ifnum\m=\n ་བྱོན། \fi
-                  %\hfill བརྟན།
-              \fi
-           \else
-              \ifnum\pageno=2 \Sam \tibnumber 1\fi
-           \fi
-        }}}
-     \hss\vrule width \ruleht}
-  \hrule height \ruleht \vss
-}}
-%
-\font\bigrm=cmr10 scaled\magstep2
-%右頁眉
-\def\pgnumb{\vbox to 0pt{
-  \kern -6pt
-  \hrule height \ruleht
-  \hbox to3pc{\vrule height \pageheight width \ruleht
-        \raise\halfpageht\hbox to 33pt{\hfil\bigrm \number\pageno\hfil}
-     \hss\vrule width \ruleht}
-%\advance\pageno by 1
-  \hrule height \ruleht \vss
-}}
-%\hbox to 3pc{\vbox to\pageheight{
-%\hrule\hbox to 35pt{\vrule\vbox to 179pt
-%{\vss T1\vss}}}}
+\def\leftpagehdr{%奇数页左边页眉框中的文字
+    \tmpdim=\pboxheight \advance\tmpdim by -12pt %
+    \vbox to \tmpdim{\hbox to 0pt{\orotate{\hbox to \tmpdim{ %左頁眉
+        \kern-8pt\pre_phdr \hfil%
+        \m=\pageno \advance\m by 1 \divide\m by 2%
+        \Sam\tibnumber\m%
+        \m=\totalpages %
+        \ifnum\m>\pageno %
+            \advance\m by-\pageno%
+            \ifnum\m<2 ་བྱོན། \fi\fi %加在最後一頁
+        \hfil\post_phdr\kern12pt}}%
+    \hss}\vss} %左頁眉
+  }%
 % 控制是否顯示邊框及頁眉
-\newif\ifframe
-\framefalse
-%
-\def\onepageout#1{\shipout\vbox{ % here we define one page of output
-\setpagesize
-\offinterlineskip % butt the boxes together
-\ifframe
-    \kern -9pt
-    \moveright -5pt\vbox{\hrule width \pagewidth height 1pt}
-    \kern 5pt
-    \rlap{\kern-3pc\kern-5pt\vbox {\pgnuma}}
-    \rlap{\kern\hsize\kern5pt\vbox {\pgnumb}}
-\fi
-\vbox to \vsize{
-  #1 % now insert the main information
-  \boxmaxdepth=\maxdepth
-} % this completes the \vbox to \pageheight
-\ifframe
-    \kern 5pt
-    \moveright -5pt\vbox{\hrule width \pagewidth height 1pt}
-\fi
-  }
-  \advancepageno
-}
-%
+\newif\ifframe \framefalse %
+\def\onepageout#1{%
+ \shipout\vbox{%方框
+  \ifframe%
+    \setboxsize %初始化計算方框大小的寄存器
+    \offinterlineskip %
+    \kern-11pt%
+    \hbox{\kern-16pt\vbox to 4pt{ %粗外框
+       \ruleht=2pt \drawpbox %
+       \vss}}%
+    \ruleht=4pt \shrinkpbox \advance\pboxheight by2pt%
+    \ifodd\pageno \m=1 %
+    \else\ifnum\pageno=2 \m=1 %第二頁是特例，用於不想用四重方框時
+    \else\m=0\fi\fi %
+    \ifnum\m=1 % 內套的三个分开的方框
+        \ruleht=1pt %
+        \hbox{ % 内含三个框
+            \kern-12.8pt %
+            \vbox to 2pt{% 左小框
+                \hrule width36pt height\ruleht%
+                \hbox to 36pt{%
+                    \vrule width\ruleht height\pboxheight%
+                    \hfil\kern16pt\leftpagehdr\hfil % 左页眉文字
+                    \vrule width\ruleht height\pboxheight%
+                }%
+                \hrule width36pt height\ruleht \vss} %
+            \advance\pboxwidth by-36pt %
+            \advance\pboxwidth by-36pt % 算中框的寬度
+            \kern1pt%
+            \vbox to 2pt{% 正文框
+                \advance\pboxwidth by -3.5pt \drawpbox \vss} %
+            \kern1.25pt %
+            \vbox to 2pt{% 右小框
+                \pboxwidth=36pt \drawpbox \vss} %
+        } %\hbox
+    \else % 套细方框
+        \hbox{\kern-12pt\vbox to 2pt{
+           \ruleht=1pt \drawpbox %
+           \vss}} \fi %\if not odd
+  \fi %\ifframe
+  \vbox to \vsize{%页面内容
+      #1 \boxmaxdepth=\maxdepth }%
+  }%
+  \advancepageno %
+}%
+%设置为输出宏
 \output{\onepageout{\unvbox255}}
+%用於P1,P2,P3的四層方框
+\newif\ifpagehdr\pagehdrfalse %是否在四层方框中放左页眉
+\newdimen\boxwidth %四层方框宽
+\newdimen\boxheight %高
+\newdimen\dr %用来传递dimension的临时寄存器
+\newdimen\dt %存放標題兩邊的長框寬度的臨時寄存器
+\def\setboxwidth#1{\boxwidth=#1} %设置方框的宽度
+\def\setboxheight#1{\boxheight=#1} %设置高度
+\def\shrinkboxsize{%将宽、高分别减少两倍\dr
+  \advance\boxwidth by-\dr \advance\boxwidth by-\dr %
+  \advance\boxheight by-\dr \advance\boxheight by-\dr}%
+\def\dblvrule{%雙竪線間隔2pt
+  \vrule width1pt height\boxheight%
+  \kern2pt%
+  \vrule width1pt height\boxheight}%
+\def\drawbox{%用dr中所指定的線寬畫方框
+  \hrule height\dr width\boxwidth %上横边1
+  \hbox{%
+    \vrule width\dr height\boxheight%
+    \kern-\dr \kern\boxwidth \kern-\dr%
+    \vrule width\dr height\boxheight}%
+  \hrule height\dr width\boxwidth %下横边1
+  }%
 %
-\def\header{{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}}
-\setbox\pghdr=\hbox{\header}
+\def\pre_phdr{}%缺省定義為空
+\def\post_phdr{}%
+\def\putpagehdr{%放頁眉，用於P2,P3
+  \vbox to 2cm{\vskip-1.9cm\hbox to 0pt{%
+    \orotate{\hbox to 3.6cm{%
+      \pre_phdr\hfil%
+      \ifnum\pageno=2 གཅིག %
+      \else\ifnum\pageno=3 གཉིས %
+      \fi\fi%
+      \hfil\post_phdr}}\hss}\vss}}%
+\def\lmultivrules{%左邊第四方框內的幾條竪線
+  \dt=\boxwidth \divide\dt by 24 %
+  \kern\dt \kern1.2pc %
+  \ifpagehdr\putpagehdr\fi \kern-1.2pc\kern\dt %1/12
+  \dblvrule %4pt
+  \multiply\dt by2 \divide\dt by5 \kern\dt \dblvrule % 1/60+4pt
+  }%
+\def\rmultivrules{%右邊第四方框內的幾條竪線
+  \dt=\boxwidth \divide\dt by 60 %
+  \dblvrule \kern\dt%
+  \dblvrule \multiply\dt by 5 \kern\dt}%
+\def\remainedwidth#1{%計算剩下的寬度存在dr中
+  \dt=\boxwidth \divide\dt by 10 % 1/12 + 1/60 = 1/10
+  \dr=\boxwidth \advance\dr by-\dt \advance\dr by-\dt %
+  \advance\dr by-18pt %
+  \setbox0=#1 %
+  \advance\dr by-\wd0 %文字的寬度
+  \advance\dr by-.7pt % 調整對齊
+  \divide\dr by 2}%
 %
+\def\quadrabox#1{%四層方框的主宏
+\offinterlineskip%
+\hbox{\vbox to 4pt{%第一方框
+  \dr=2pt\drawbox%
+  \vss}}%
+\dr=4pt\shrinkboxsize%
+\advance\boxheight by 2pt%
+\hbox{\kern4pt\vbox to 1pt{%第二方框
+  \dr=1pt\drawbox%
+  \vss}}%
+\dr=\boxheight \divide\dr by 5 \dt=\dr%第三框上下各留1/5空
+\advance\dr by1pt \shrinkboxsize%
+\vskip\dt %暫存，第四方框時橫向留空時要用
+\hbox{\kern5pt\kern\dt%
+  \vbox to 3pt{%第三方框
+    \dr=1pt\drawbox%
+    \vss}}%
+\dr=3pt\shrinkboxsize%
+\hbox{\kern8pt\kern\dt\vbox{%第四方框
+   \hrule height1pt width\boxwidth %上横边4
+   \hbox to\boxwidth{%
+     \vrule width1pt height\boxheight % 1pt
+     \hbox{%
+       \lmultivrules %
+       %\tracingcommands=3 \tracingmacros=3
+       \remainedwidth{#1} %
+       \hskip\dr \hfil %
+       \vbox{\vfil \box0 \vskip7pt\vfil}% 
+       \hfil \hskip\dr %
+       \rmultivrules}%
+     \vrule width1pt height\boxheight\hss}%
+   \hrule height1pt width\boxwidth %下横边4
+   }}%
+}%
+%用于设置从P5开始的正文段落形状的宏
+\def\slineil{35pt\dr}%
+\def\twoslineil{\slineil\slineil}
+\def\threeslineil{\twoslineil\slineil}
+\def\fourslineil{\twoslineil\twoslineil}
+\def\fiveslineil{\threeslineil\twoslineil}%
+\def\sixslineil{\fiveslineil\slineil}%
+\def\llineil{0pt\hsize}%
+\def\twollineil{\llineil\llineil}
+\def\threellineil{\twollineil\llineil}
+\def\fourllineil{\twollineil\twollineil}
+\def\fivellineil{\threellineil\twollineil}%
+\def\sixllineil{\fivellineil\llineil}%
+\def\pfive{\fiveslineil \fivellineil}%
+\def\fourpfive{\pfive\pfive\pfive\pfive}%
+\def\sixteenpfive{\fourpfive\fourpfive\fourpfive\fourpfive}%
+\def\thirtytwopfive{\sixteenpfive\sixteenpfive\sixteenpfive\sixteenpfive}%
+\def\psix{\sixslineil \sixllineil}%
+\def\fourpsix{\psix\psix\psix\psix}%
+\def\sixteenpsix{\fourpsix\fourpsix\fourpsix\fourpsix}%
+\def\thirtytwopsix{\sixteenpsix\sixteenpsix\sixteenpsix\sixteenpsix}%
+\def\setparshape#1#2{%{5/6}{该段文字大致最多的页数(<32*2)}
+    %设置该段文字为5/6個短行，接5/6個長行
+    \dr=\hsize \advance\dr by-2.4cm \dt=\hsize %
+    \ifnum#1=5 %
+        \ifnum#2<4 \parshape=40 \fourpfive %
+        \else\ifnum#2<16 \parshape=160 \sixteenpfive %
+        \else \parshape=640 \thirtytwopfive \fi\fi %
+    \else\ifnum#1=6 %
+        \ifnum#2<4 \parshape=48 \fourpsix %
+        \else\ifnum#2<16 \parshape=192 \sixteenpsix %
+        \else \parshape=768 \thirtytwopsix \fi\fi\fi\fi} %
+\def\setrestedparshape#1#2{ %{5/6}{一個正反面中還剩下的行數}一段不超過2*16頁
+    \ifnum#1=5 %
+        \ifcase#2 %
+        \or \parshape=161 \llineil \sixteenpfive %1行
+        \or \parshape=162 \twollineil \sixteenpfive %2行
+        \or \parshape=163 \threellineil \sixteenpfive %3行
+        \or \parshape=164 \fourllineil \sixteenpfive %4行
+        \or \parshape=165 \fivellineil \sixteenpfive %5行
+        \or \parshape=166 \slineil\fivellineil \sixteenpfive %1+5行
+        \or \parshape=167 \twoslineil\fivellineil \sixteenpfive %2+5行
+        \or \parshape=168 \threeslineil\fivellineil \sixteenpfive %3+5行
+        \or \parshape=169 \fourslineil\fivellineil \sixteenpfive \fi %4+5行
+    \else\ifnum#1=6 %
+        \ifcase#2 %
+        \or \parshape=193 \llineil \sixteenpsix %1
+        \or \parshape=194 \twollineil \sixteenpsix %2
+        \or \parshape=195 \threellineil \sixteenpsix %3
+        \or \parshape=196 \fourllineil \sixteenpsix %4
+        \or \parshape=197 \fivellineil \sixteenpsix %5
+        \or \parshape=198 \sixllineil \sixteenpsix %6
+        \or \parshape=199 \slineil\sixllineil \sixteenpsix %1+6
+        \or \parshape=200 \twoslineil\sixllineil \sixteenpsix %2+6
+        \or \parshape=201 \threeslineil\sixllineil \sixteenpsix %3+6
+        \or \parshape=202 \fourslineil\sixllineil \sixteenpsix %4+6
+        \or \parshape=203 \fiveslineil\sixllineil \sixteenpsix \fi %5+6
+    \fi\fi} %
+%簡單的單層方框
 \def\titlebox#1{\hbox{\vbox{
 \hrule height1pt\hbox{\vrule width1pt\kern4pc\vrule width1pt
 \vbox{\kern9pt#1\kern9pt}\vrule width1pt\kern4pc\vrule width1pt}\hrule height1pt}
 }}
-%
+%自動加在奇數頁首的雲頭符
+\newbox\pghdr%
+\TibHeaderBox=\pghdr%
+\def\header{{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}}%
+\setbox\pghdr=\hbox{\header}%
 \Sam
