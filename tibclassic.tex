@@ -64,7 +64,8 @@
         \m=\pageno \advance\m by 1 \divide\m by 2%
         \Sam\tibnumber\m%
         \m=\totalpages %
-        \ifnum\m>\pageno %
+        \ifnum\pageno>\m \relax%
+        \else%
             \advance\m by-\pageno%
             \ifnum\m<2 ་བྱོན། \fi\fi %加在最後一頁
         \hfil\post_phdr\kern12pt}}%
@@ -115,6 +116,7 @@
   \vbox to \vsize{%页面内容
       #1 \boxmaxdepth=\maxdepth }%
   }%
+  \vskip0pt plus6pt minus3pt
   \advancepageno %
 }%
 %设置为输出宏
@@ -207,6 +209,12 @@
    \hrule height1pt width\boxwidth %下横边4
    }}%
 }%
+%
+\newcount\tmpcnta
+\def\modulo#1#2{ % 求余数
+    \tmpcnta=#1 %
+    \divide\tmpcnta by#2 \multiply\tmpcnta by#2 \multiply\tmpcnta by-1 %
+    \advance\tmpcnta by #1 \ti=\tmpcnta}
 %用于设置从P5开始的正文段落形状的宏
 \def\slineil{35pt\dr}%
 \def\twoslineil{\slineil\slineil}
@@ -265,6 +273,16 @@
         \or \parshape=202 \fourslineil\sixllineil \sixteenpsix %4+6
         \or \parshape=203 \fiveslineil\sixllineil \sixteenpsix \fi %5+6
     \fi\fi} %
+\newcount\prevlinesremained \prevlinesremained=0 %上一段所剩最後一頁中行
+\newcount\ti \newcount\tj % 臨時變量
+\def\setnewparshape#1{ %根據上一段剩餘的行數設置新一段的parshape
+    \tj=#1 \multiply\tj by 2 %
+    \ti=\prevgraf \advance\ti by \prevlinesremained %加上上一段剩下的行
+    %\showthe\ti \showthe\tj %
+    \modulo{\the\ti}{\the\tj} \prevlinesremained=\ti %
+    \advance\tj by -\prevlinesremained %
+    %\showthe\tj \showthe\prevlinesremained %
+    \setrestedparshape{#1}{\tj}}
 %簡單的單層方框
 \def\titlebox#1{\hbox{\vbox{
 \hrule height1pt\hbox{\vrule width1pt\kern4pc\vrule width1pt
