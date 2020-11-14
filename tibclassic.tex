@@ -12,8 +12,8 @@
 \def\setpaperhalfa#1{%設置紙張大小，半A4/三分之一A3
   \ifnum#1=4 %Half A4 paper
      \pdfpageheight90mm\pdfpagewidth297mm%
-     \vsize=55mm\hsize=225mm%
-     \voffset=-8mm
+     \vsize=55mm\hsize=243mm%
+     \voffset=-10mm
   \else%
      \ifnum#1=3 %One third A3 paper
        \pdfpageheight99mm\pdfpagewidth420mm%
@@ -62,7 +62,7 @@
     \vbox to \tmpdim{\hbox to 0pt{\orotate{\hbox to \tmpdim{ %左頁眉
         \kern-8pt\pre_phdr \hfil%
         \m=\pageno \advance\m by 1 \divide\m by 2%
-        \Sam\tibnumber\m%
+        \tibnumber\m%
         \m=\totalpages %
         \ifnum\pageno>\m \relax%
         \else%
@@ -72,7 +72,8 @@
     \hss}\vss} %左頁眉
   }%
 % 控制是否顯示邊框及頁眉
-\newif\ifframe \framefalse %
+\newif\ifframe \framefalse % 是否顯示邊框
+\newif\ifmultiframe \multiframefalse % 是否是三個方框
 \def\onepageout#1{%
  \shipout\vbox{%方框
   \ifframe%
@@ -83,10 +84,10 @@
        \ruleht=2pt \drawpbox %
        \vss}}%
     \ruleht=4pt \shrinkpbox \advance\pboxheight by2pt%
-    \ifodd\pageno \m=1 %
-    \else\ifnum\pageno=2 \m=1 %第二頁是特例，用於不想用四重方框時
-    \else\m=0\fi\fi %
-    \ifnum\m=1 % 內套的三个分开的方框
+    \ifodd\pageno \multiframetrue %
+    \else\ifnum\pageno=2 \multiframetrue %第二頁是特例，用於不想用四重方框時
+    \else\multiframefalse\fi\fi %
+    \ifmultiframe % 內套的三个分开的方框
         \ruleht=1pt %
         \hbox{ % 内含三个框
             \kern-12.8pt %
@@ -110,13 +111,12 @@
     \else % 套细方框
         \hbox{\kern-12pt\vbox to 2pt{
            \ruleht=1pt \drawpbox %
-           \vss}} \fi %\if not odd
+           \vss}} \fi %\ifmultiframe
   \fi %\ifframe
   \vskip9pt
   \vbox to \vsize{%页面内容
       #1 \boxmaxdepth=\maxdepth }%
   }%
-  \vskip0pt plus6pt minus3pt
   \advancepageno %
 }%
 %设置为输出宏
@@ -145,11 +145,15 @@
   \hrule height\dr width\boxwidth %下横边1
   }%
 %
-\def\pre_phdr{}%缺省定義為空
+\def\hdr_up{}%缺省定義為空
+\def\pre_phdr{}%
 \def\post_phdr{}%
+\newdimen\hdroffset \hdroffset=0pt
 \def\putpagehdr{%放頁眉，用於P2,P3
-  \vbox to 2cm{\vskip-1.9cm\hbox to 0pt{%
-    \orotate{\hbox to 3.6cm{%
+  \dimn=\boxheight \advance\dimn by-.25em %
+  \hdroffset=-\dimn \divide\hdroffset by 2 %
+  \vbox to 2cm{\vskip\hdroffset \hdr_up \hbox to 0pt{%
+    \orotate{\hbox to \dimn{%
       \pre_phdr\hfil%
       \ifnum\pageno=2 གཅིག %
       \else\ifnum\pageno=3 གཉིས %
@@ -210,11 +214,11 @@
    }}%
 }%
 %
-\newcount\tmpcnta
+\newcount\tmpmod
 \def\modulo#1#2{ % 求余数
-    \tmpcnta=#1 %
-    \divide\tmpcnta by#2 \multiply\tmpcnta by#2 \multiply\tmpcnta by-1 %
-    \advance\tmpcnta by #1 \ti=\tmpcnta}
+    \tmpmod=#1 %
+    \divide\tmpmod by#2 \multiply\tmpmod by#2 \multiply\tmpmod by-1 %
+    \advance\tmpmod by #1}
 %用于设置从P5开始的正文段落形状的宏
 \def\slineil{35pt\dr}%
 \def\twoslineil{\slineil\slineil}
@@ -279,7 +283,7 @@
     \tj=#1 \multiply\tj by 2 %
     \ti=\prevgraf \advance\ti by \prevlinesremained %加上上一段剩下的行
     %\showthe\ti \showthe\tj %
-    \modulo{\the\ti}{\the\tj} \prevlinesremained=\ti %
+    \modulo{\the\ti}{\the\tj} \prevlinesremained=\tmpmod %
     \advance\tj by -\prevlinesremained %
     %\showthe\tj \showthe\prevlinesremained %
     \setrestedparshape{#1}{\tj}}
