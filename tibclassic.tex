@@ -10,12 +10,12 @@
 %
 \newdimen\dimn%計算hoffset要用的臨時變量
 \def\setpaperhalfa#1{%設置紙張大小，半A4/三分之一A3
-  \ifnum#1=4 %Half A4 paper
+  \ifnum#1=4 % 1/2 A4
      \pdfpageheight90mm\pdfpagewidth297mm%
      \vsize=55mm\hsize=243mm%
      \voffset=-10mm
   \else%
-     \ifnum#1=3 %One third A3 paper
+     \ifnum#1=3 % 1/3 A3
        \pdfpageheight99mm\pdfpagewidth420mm%
        \vsize=66mm\hsize=366mm%
        \voffset=-8mm%
@@ -71,47 +71,62 @@
         \hfil\post_phdr\kern12pt}}%
     \hss}\vss} %左頁眉
   }%
-% 控制是否顯示邊框及頁眉
-\newif\ifframe \framefalse % 是否顯示邊框
-\newif\ifmultiframe \multiframefalse % 是否是三個方框
+% 控制是否加邊框及頁眉
+\newif\ifframe \framefalse % 是否加最外邊框
+\newif\ifinnerframe \innerframetrue % 是否不加内框
+\def\noinnerframe{ % 不加内框，祇加上左頁眉並留空
+    \innerframefalse % 尚需修改setparshape，將其中硬編碼的數改爲用變量的
+    }
+\newif\ifmultiframe \multiframefalse % 臨時變量，是否是奇數頁加三内框
 \def\onepageout#1{%
  \shipout\vbox{%方框
   \ifframe%
     \setboxsize %初始化計算方框大小的寄存器
     \offinterlineskip %
-    \kern-10pt%
+    \vskip-10pt%
     \hbox{\kern-16pt\vbox to 4pt{ %粗外框
        \ruleht=2pt \drawpbox %
        \vss}}%
     \ruleht=4pt \shrinkpbox \advance\pboxheight by2pt%
-    \ifodd\pageno \multiframetrue %
-    \else\ifnum\pageno=2 \multiframetrue %第二頁是特例，用於不想用四重方框時
-    \else\multiframefalse\fi\fi %
-    \ifmultiframe % 內套的三个分开的方框
-        \ruleht=1pt %
-        \hbox{ % 内含三个框
-            \kern-12.8pt %
-            \vbox to 2pt{% 左小框
-                \hrule width36pt height\ruleht%
-                \hbox to 36pt{%
-                    \vrule width\ruleht height\pboxheight%
-                    \hfil\kern16pt\leftpagehdr\hfil % 左页眉文字
-                    \vrule width\ruleht height\pboxheight%
-                }%
-                \hrule width36pt height\ruleht \vss} %
-            \advance\pboxwidth by-36pt %
-            \advance\pboxwidth by-36pt % 算中框的寬度
-            \kern1pt%
-            \vbox to 2pt{% 正文框
-                \advance\pboxwidth by -3.5pt \drawpbox \vss} %
-            \kern1.25pt %
-            \vbox to 2pt{% 右小框
-                \pboxwidth=36pt \drawpbox \vss} %
-        } %\hbox
-    \else % 套细方框
-        \hbox{\kern-12pt\vbox to 2pt{
-           \ruleht=1pt \drawpbox %
-           \vss}} \fi %\ifmultiframe
+    \ifinnerframe % 需要加内框
+        \ifodd\pageno \multiframetrue %
+        \else\ifnum\pageno=2 \multiframetrue %特例，用於P2不想用四重方框時
+        \else\multiframefalse\fi\fi %
+        %
+        \ifmultiframe % 奇數頁三内框
+            \ruleht=1pt %
+            \hbox{ % 内含三个框
+                \kern-12.8pt %
+                \vbox to 2pt{% 左小框
+                    \hrule width36pt height\ruleht%
+                    \hbox to 36pt{%
+                        \vrule width\ruleht height\pboxheight%
+                        \hfil\kern10pt\leftpagehdr\hfil % 左页眉文字
+                        \vrule width\ruleht height\pboxheight%
+                    }%
+                    \hrule width36pt height\ruleht \vss} %
+                \advance\pboxwidth by-36pt %
+                \advance\pboxwidth by-36pt % 算中框的寬度
+                \kern1pt%
+                \vbox to 2pt{% 正文框
+                    \advance\pboxwidth by -3.5pt \drawpbox \vss} %
+                \kern1.25pt %
+                \vbox to 2pt{% 右小框
+                    \pboxwidth=36pt \drawpbox \vss} %
+            } %\hbox
+        \else % 偶數頁套细方框
+            \hbox{\kern-12pt\vbox to 2pt{
+               \ruleht=1pt \drawpbox %
+               \vss}} \fi %\ifmultiframe
+    \else %不需要加内框
+        \ifodd\pageno % 奇數頁P5等加頁眉
+            \hbox{ % 内含三个框
+                \kern-12.8pt %
+                \vbox to 2pt{% 左小框
+                    \hbox to 36pt{%
+                        \hfil\kern10pt\leftpagehdr\hfil % 左页眉文字
+                    }\vss}} \fi %\ifodd
+    \fi %\ifinnerframe 
   \fi %\ifframe
   \vskip9pt
   \vbox to \vsize{%页面内容
@@ -220,13 +235,17 @@
     \divide\tmpmod by#2 \multiply\tmpmod by#2 \multiply\tmpmod by-1 %
     \advance\tmpmod by #1}
 %用于设置从P5开始的正文段落形状的宏
-\def\slineil{35pt\dr}%
+\newdimen\oddlskip \oddlskip=0pt
+\newdimen\evenlskip \evenlskip=0pt
+\newdimen\odtexthsize % 用來計算奇數頁文字寬度
+\newdimen\evtexthsize % 用來計算偶數頁文字寬度
+\def\slineil{\oddlskip\odtexthsize}%
 \def\twoslineil{\slineil\slineil}
 \def\threeslineil{\twoslineil\slineil}
 \def\fourslineil{\twoslineil\twoslineil}
 \def\fiveslineil{\threeslineil\twoslineil}%
 \def\sixslineil{\fiveslineil\slineil}%
-\def\llineil{0pt\hsize}%
+\def\llineil{\evenlskip\evtexthsize}%
 \def\twollineil{\llineil\llineil}
 \def\threellineil{\twollineil\llineil}
 \def\fourllineil{\twollineil\twollineil}
@@ -242,7 +261,18 @@
 \def\thirtytwopsix{\sixteenpsix\sixteenpsix\sixteenpsix\sixteenpsix}%
 \def\setparshape#1#2{%{5/6}{该段文字大致最多的页数(<32*2)}
     %设置该段文字为5/6個短行，接5/6個長行
-    \dr=\hsize \advance\dr by-2.4cm \dt=\hsize %
+    \odtexthsize=\hsize %
+    \evtexthsize=\hsize %
+    \ifinnerframe % 帶内框，外框已經左移了12pt(0.42cm)
+        \advance\odtexthsize by-2.4cm % 帶内框時P5左右各空1.2cm(36pt)
+        \oddlskip=35pt \evenlskip=0pt % P6左右皆不留空
+    \else % 不帶内框
+        \advance\odtexthsize by -2.16cm % 不帶内框時P5左2.1cm右0.9cm
+        %\showthe\odtexthsize %
+        \oddlskip=48.3pt \evenlskip=14pt % P5 2.1cm(60pt) / P6 0.9cm(26pt)
+        \advance\evtexthsize by-0.96cm % P6左右黑邊合計1.8cm
+        %\showthe\evtexthsize %
+    \fi % \ifinnerframe
     \ifnum#1=5 %
         \ifnum#2<4 \parshape=40 \fourpfive %
         \else\ifnum#2<16 \parshape=160 \sixteenpfive %
@@ -253,7 +283,7 @@
         \else \parshape=768 \thirtytwopsix \fi\fi\fi\fi} %
 \def\setrestedparshape#1#2{ %{5/6}{一個正反面中還剩下的行數}一段不超過2*16頁
     \ifnum#1=5 %
-        \ifcase#2 %
+        \ifcase#2 \relax %
         \or \parshape=161 \llineil \sixteenpfive %1行
         \or \parshape=162 \twollineil \sixteenpfive %2行
         \or \parshape=163 \threellineil \sixteenpfive %3行
@@ -264,7 +294,7 @@
         \or \parshape=168 \threeslineil\fivellineil \sixteenpfive %3+5行
         \or \parshape=169 \fourslineil\fivellineil \sixteenpfive \fi %4+5行
     \else\ifnum#1=6 %
-        \ifcase#2 %
+        \ifcase#2 \relax %
         \or \parshape=193 \llineil \sixteenpsix %1
         \or \parshape=194 \twollineil \sixteenpsix %2
         \or \parshape=195 \threellineil \sixteenpsix %3
