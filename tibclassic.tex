@@ -1,8 +1,9 @@
 \input tibex
+\input pixidxfile
 %排版藏文傳統長函書的包
 \parindent=0pt%
 %
-\def\orotate#1{\setbox0=\hbox{#1}%
+\def\orot@te#1{\setbox0=\hbox{#1}%
   \special{x:gsave}\special{x:rotate 270}%
   \box0 \special{x:grestore}}
 %
@@ -18,7 +19,7 @@
      \ifnum#1=3 % 1/3 A3
        \pdfpageheight99mm\pdfpagewidth420mm%
        \vsize=66mm\hsize=366mm%
-       \voffset=-8mm%
+       \voffset=-10.5mm%
      \fi\fi%
   \dimn=\pdfpagewidth \advance\dimn by -\hsize%
   \advance\dimn by -28mm \divide\dimn by 2 %
@@ -36,38 +37,45 @@
 %
 \parskip=0pt \parfillskip=0pt%
 %
-\newdimen\pboxwidth \newdimen\pboxheight \newdimen\ruleht%
-\newdimen\tmpdim %
+\newdimen\pb@xwidth \newdimen\pb@xheight \newdimen\ruleht@%
+\newdimen\tmp@dim %
 % 變量初始化宏，在\output裡調用
 \def\setboxsize{%
-  \pboxwidth=\hsize \pboxheight=\vsize \ruleht=1pt%
-  \advance\pboxwidth by 18pt \advance\pboxwidth by 4.6mm%
-  \advance\pboxheight by 27pt \advance\pboxheight by \maxdepth}%
-\def\drawpbox{%用ruleht中所指定的線寬畫pboxwidth*pboxheight方框
-  \hrule height\ruleht width\pboxwidth %上横边1
+  \pb@xwidth=\hsize \pb@xheight=\vsize \ruleht@=1pt%
+  \advance\pb@xwidth by 18pt \advance\pb@xwidth by 4.6mm%
+  \advance\pb@xheight by 27pt \advance\pb@xheight by \maxdepth}%
+\def\d@rawpbox{%用ruleht@中所指定的線寬畫pboxwidth*pb@xheight方框
+  \hrule height\ruleht@ width\pb@xwidth %上横边
   \hbox{%
-    \vrule width\ruleht height\pboxheight%
-    \kern-\ruleht \kern\pboxwidth \kern-\ruleht%
-    \vrule width\ruleht height\pboxheight}%
-  \hrule height\ruleht width\pboxwidth %下横边1
+    \vrule width\ruleht@ height\pb@xheight%
+    \kern-\ruleht@ \kern\pb@xwidth \kern-\ruleht@%
+    \vrule width\ruleht@ height\pb@xheight}%
+  \hrule height\ruleht@ width\pb@xwidth %下横边
   }%
-\def\shrinkpbox{%将长宽减去2倍的ruleht
-  \advance\pboxwidth by-\ruleht \advance\pboxwidth by-\ruleht %
-  \advance\pboxheight by-\ruleht \advance\pboxheight by-\ruleht}%
-% 由使用者设置这个变量告诉TibeX在最后一页的正面加上་བྱོན
+\def\shrinkpb@x{%将长宽减去2倍的ruleht@
+  \advance\pb@xwidth by-\ruleht@ \advance\pb@xwidth by-\ruleht@ %
+  \advance\pb@xheight by-\ruleht@ \advance\pb@xheight by-\ruleht@}%
+\def\dblvrule#1{%雙竪線間隔2pt
+  \vrule width1pt height#1%
+  \kern2pt%
+  \vrule width1pt height#1}%
+\def\pdblvlin@{
+  \dblvrule\pb@xheight}
+% 由使用者设置这个变量告诉TibeX在最后一葉的正面加上་བྱོན
 \newcount\totalpages \totalpages=0%
 %
-\def\leftpagehdr{%奇数页左边页眉框中的文字
-    \tmpdim=\pboxheight \advance\tmpdim by -12pt %
-    \vbox to \tmpdim{\hbox to 0pt{\orotate{\hbox to \tmpdim{ %左頁眉
+\def\putp@geno{\c@m=\pageno \advance\c@m by1 \divide\c@m by2 \tibpageno\c@m}
+\def\tibpageno{\tibnumber} %設置頁碼風格，這裏是傳統的གཅིག་གཉིས་གསུམ།風格頁碼
+\def\leftpagehd@r{%奇数页左边页眉框中的文字
+    \tmp@dim=\pb@xheight \advance\tmp@dim by -12pt %
+    \vbox to \tmp@dim{\hbox to 0pt{\orot@te{\hbox to \tmp@dim{ %左頁眉
         \kern-8pt\pre_phdr \hfil%
-        \m=\pageno \advance\m by 1 \divide\m by 2%
-        \tibnumber\m%
-        \m=\totalpages %
-        \ifnum\pageno>\m \relax%
+        \putp@geno %輸出頁碼
+        \c@m=\totalpages %
+        \ifnum\pageno>\c@m \relax%
         \else%
-            \advance\m by-\pageno%
-            \ifnum\m<2 ་བྱོན། \fi\fi %加在最後一頁
+            \advance\c@m by-\pageno%
+            \ifnum\c@m<2 ་བྱོན། \fi\fi %加在最後一頁
         \hfil\post_phdr\kern12pt}}%
     \hss}\vss} %左頁眉
   }%
@@ -78,45 +86,89 @@
     \innerframefalse % 尚需修改setparshape，將其中硬編碼的數改爲用變量的
     }
 \newif\ifmultiframe \multiframefalse % 臨時變量，是否是奇數頁加三内框
+%
+\def\setppix#1{\XeTeXpicfile#1 height \pb@xheight}
+\def\pboxlpic{} %設置這兩個宏來讓\output輸出圖片
+\def\pboxrpic{} %
+%中間的正文框，\ifpixbox則給兩邊加上圖片框
+\newdimen\pixb@xwidth
+\def\pb@xpic#1{
+  \vbox to \pb@xheight{
+    \pixb@xwidth=\pb@xheight %
+    \multiply\pixb@xwidth by3 \divide\pixb@xwidth by4% 寬=3/4高
+    \hbox to \pixb@xwidth{#1\hss}}}%
+\def\midtextb@x{ %
+  \ifpixbox %
+    %\message{ pixpageno=\the\pixp@geno. } %
+    \ifnum\pageno=\pixp@geno %
+      \hrule height\ruleht@ width\pb@xwidth %上横边
+      \hbox to \pb@xwidth{%
+        \vrule width\ruleht@ height\pb@xheight%左豎邊
+        %\kern-\ruleht@ \kern\pb@xwidth \kern-\ruleht@%
+        %\show\pboxlpic %
+        \pb@xpic{\pboxlpic} %左圖片
+        \pdblvlin@ %雙竪綫
+        %\kern-\pixb@xwidth \kern-pixb@xwidth \kern-8pt%中空
+        \hfil %
+        \pdblvlin@ %雙竪綫
+        \pb@xpic{\pboxrpic} %右圖片
+        \vrule width\ruleht@ height\pb@xheight} %右豎邊
+      \hrule height\ruleht@ width\pb@xwidth %下横边
+    \else % 這一頁沒圖片
+      %\message{===no. \the\pageno{\the\pixp@geno} is not pix page, .} %
+      \d@rawpbox \fi % \ifnum
+  \else % not pixbox
+    %\message{===no pixbox.} %
+    \d@rawpbox %
+  \fi} %\ifpixbox
+\def\estim@tepixboxwidth{ %預估\pixboxwidth的值,在setparshape中要用到
+  \pixb@xwidth=\vsize %
+  \advance\pixb@xwidth by 27pt %
+  \advance\pixb@xwidth by-6pt \advance\pixb@xwidth by\maxdepth %\shrinkbox，+2pt之後的内框高
+  \multiply\pixb@xwidth by 3 \divide\pixb@xwidth by 4} % 3/4
+%
+% Output routine
+%
 \def\onepageout#1{%
  \shipout\vbox{%方框
+  %\message{ BG[pixpageno=\the\pixp@geno.] }
   \ifframe%
     \setboxsize %初始化計算方框大小的寄存器
     \offinterlineskip %
     \vskip-10pt%
     \hbox{\kern-16pt\vbox to 4pt{ %粗外框
-       \ruleht=2pt \drawpbox %
+       \ruleht@=2pt \d@rawpbox %
        \vss}}%
-    \ruleht=4pt \shrinkpbox \advance\pboxheight by2pt%
+    \ruleht@=4pt \shrinkpb@x \advance\pb@xheight by2pt%
     \ifinnerframe % 需要加内框
         \ifodd\pageno \multiframetrue %
         \else\ifnum\pageno=2 \multiframetrue %特例，用於P2不想用四重方框時
         \else\multiframefalse\fi\fi %
         %
         \ifmultiframe % 奇數頁三内框
-            \ruleht=1pt %
+            \ruleht@=1pt %
             \hbox{ % 内含三个框
                 \kern-12.8pt %
                 \vbox to 2pt{% 左小框
-                    \hrule width36pt height\ruleht%
+                    \hrule width36pt height\ruleht@%
                     \hbox to 36pt{%
-                        \vrule width\ruleht height\pboxheight%
-                        \hfil\kern10pt\leftpagehdr\hfil % 左页眉文字
-                        \vrule width\ruleht height\pboxheight%
+                        \vrule width\ruleht@ height\pb@xheight%
+                        \hfil\kern10pt\leftpagehd@r\hfil % 左页眉文字
+                        \vrule width\ruleht@ height\pb@xheight%
                     }%
-                    \hrule width36pt height\ruleht \vss} %
-                \advance\pboxwidth by-36pt %
-                \advance\pboxwidth by-36pt % 算中框的寬度
+                    \hrule width36pt height\ruleht@ \vss} %
+                \advance\pb@xwidth by-36pt %
+                \advance\pb@xwidth by-36pt % 算中框的寬度
                 \kern1pt%
                 \vbox to 2pt{% 正文框
-                    \advance\pboxwidth by -3.5pt \drawpbox \vss} %
+                    \advance\pb@xwidth by -3.5pt \midtextb@x \vss} %
                 \kern1.25pt %
                 \vbox to 2pt{% 右小框
-                    \pboxwidth=36pt \drawpbox \vss} %
+                    \pb@xwidth=36pt \d@rawpbox \vss} %
             } %\hbox
         \else % 偶數頁套细方框
             \hbox{\kern-12pt\vbox to 2pt{
-               \ruleht=1pt \drawpbox %
+               \ruleht@=1pt \d@rawpbox %
                \vss}} \fi %\ifmultiframe
     \else %不需要加内框
         \ifodd\pageno % 奇數頁P5等加頁眉
@@ -124,7 +176,7 @@
                 \kern-12.8pt %
                 \vbox to 2pt{% 左小框
                     \hbox to 36pt{%
-                        \hfil\kern10pt\leftpagehdr\hfil % 左页眉文字
+                        \hfil\kern10pt\leftpagehd@r\hfil % 左页眉文字
                     }\vss}} \fi %\ifodd
     \fi %\ifinnerframe 
   \fi %\ifframe
@@ -132,197 +184,235 @@
   \vbox to \vsize{%页面内容
       #1 \boxmaxdepth=\maxdepth }%
   }%
+  \nextp@gepixs % 讀入下一頁圖片索引
+  %\message{ [pixpageno=\the\pixp@geno.] }
+  %\showpixvars %
   \advancepageno %
 }%
 %设置为输出宏
 \output{\onepageout{\unvbox255}}
 %用於P1,P2,P3的四層方框
 \newif\ifpagehdr\pagehdrfalse %是否在四层方框中放左页眉
-\newdimen\boxwidth %四层方框宽
-\newdimen\boxheight %高
-\newdimen\dr %用来传递dimension的临时寄存器
-\newdimen\dt %存放標題兩邊的長框寬度的臨時寄存器
-\def\setboxwidth#1{\boxwidth=#1} %设置方框的宽度
-\def\setboxheight#1{\boxheight=#1} %设置高度
-\def\shrinkboxsize{%将宽、高分别减少两倍\dr
-  \advance\boxwidth by-\dr \advance\boxwidth by-\dr %
-  \advance\boxheight by-\dr \advance\boxheight by-\dr}%
-\def\dblvrule{%雙竪線間隔2pt
-  \vrule width1pt height\boxheight%
-  \kern2pt%
-  \vrule width1pt height\boxheight}%
-\def\drawbox{%用dr中所指定的線寬畫方框
-  \hrule height\dr width\boxwidth %上横边1
+%\newdimen\b@xwidth %四层方框宽
+%\newdimen\b@xheight %高
+\newif\ifpixbox\pixboxfalse %是否左右留圖片框 %普通四層框
+\newdimen\d@r %用来传递dimension的临时寄存器
+\newdimen\d@t %存放標題兩邊的長框寬度的臨時寄存器
+\def\setboxwidth#1{\pb@xwidth=#1} %设置方框的宽度
+\def\setboxheight#1{\pb@xheight=#1} %设置高度
+\def\shrinkboxsize{%将宽、高分别减少两倍\d@r
+  \advance\pb@xwidth by-\d@r \advance\pb@xwidth by-\d@r %
+  \advance\pb@xheight by-\d@r \advance\pb@xheight by-\d@r}%
+\def\setgapvalue{%根據\ifpixbox來設置二三層框間距
+  \ifpixbox % 帶圖片的四層框
+      \d@r=1.6pc \d@t=\d@r%
+  \else % 普通四層框
+      \d@r=\pb@xheight \divide\d@r by 5 \d@t=\d@r%第三框上下各留1/5空
+      \advance\d@r by1pt \fi}%
+\def\dblvlin@{%
+  \dblvrule\pb@xheight}%
+\def\dr@wbox{%用d@r中所指定的線寬畫方框
+  \hrule height\d@r width\pb@xwidth %上横边1
   \hbox{%
-    \vrule width\dr height\boxheight%
-    \kern-\dr \kern\boxwidth \kern-\dr%
-    \vrule width\dr height\boxheight}%
-  \hrule height\dr width\boxwidth %下横边1
+    \vrule width\d@r height\pb@xheight%
+    \kern-\d@r \kern\pb@xwidth \kern-\d@r%
+    \vrule width\d@r height\pb@xheight}%
+  \hrule height\d@r width\pb@xwidth %下横边1
   }%
 %
-\def\hdr_up{}%缺省定義為空
-\def\pre_phdr{}%
-\def\post_phdr{}%
-\newdimen\hdroffset \hdroffset=0pt
-\def\putpagehdr{%放頁眉，用於P2,P3
-  \dimn=\boxheight \advance\dimn by-.25em %
-  \hdroffset=-\dimn \divide\hdroffset by 2 %
-  \vbox to 2cm{\vskip\hdroffset \hdr_up \hbox to 0pt{%
-    \orotate{\hbox to \dimn{%
+\def\hdr_up{} %調節頁眉位置，用\kern控制頁眉上下
+\def\pre_phdr{} %頁碼前頁眉
+\def\post_phdr{} %頁碼後頁眉
+\newdimen\hdroffs@t \hdroffs@t=0pt
+\def\putp@gehdr{%放頁眉，用於P2,P3
+  \dimn=\pb@xheight \advance\dimn by-.25em %
+  \hdroffs@t=-\dimn \divide\hdroffs@t by 2 %
+  \vbox to 2cm{\vskip\hdroffs@t \hdr_up \hbox to 0pt{%
+    \orot@te{\hbox to \dimn{%
       \pre_phdr\hfil%
-      \ifnum\pageno=2 གཅིག %
-      \else\ifnum\pageno=3 གཉིས %
-      \fi\fi%
+      \putp@geno%
       \hfil\post_phdr}}\hss}\vss}}%
-\def\lmultivrules{%左邊第四方框內的幾條竪線
-  \dt=\boxwidth \divide\dt by 24 %
-  \kern\dt \kern1.2pc %
-  \ifpagehdr\putpagehdr\fi \kern-1.2pc\kern\dt %1/12
-  \dblvrule %4pt
-  \multiply\dt by2 \divide\dt by5 \kern\dt \dblvrule % 1/60+4pt
+\def\lmultivrul@s{%左邊第四方框內的幾條竪線
+  \d@t=\pb@xwidth \divide\d@t by 24 %
+  \kern\d@t \kern1.2pc %
+  \ifpagehdr\putp@gehdr\fi \kern-1.2pc\kern\d@t %1/12
+  \dblvlin@ %4pt
+  \multiply\d@t by2 \divide\d@t by5 \kern\d@t \dblvlin@ % 1/60+4pt
   }%
-\def\rmultivrules{%右邊第四方框內的幾條竪線
-  \dt=\boxwidth \divide\dt by 60 %
-  \dblvrule \kern\dt%
-  \dblvrule \multiply\dt by 5 \kern\dt}%
-\def\remainedwidth#1{%計算剩下的寬度存在dr中
-  \dt=\boxwidth \divide\dt by 10 % 1/12 + 1/60 = 1/10
-  \dr=\boxwidth \advance\dr by-\dt \advance\dr by-\dt %
-  \advance\dr by-18pt %
+\def\rmultivrul@s{%右邊第四方框內的幾條竪線
+  \d@t=\pb@xwidth \divide\d@t by 60 %
+  \dblvlin@ \kern\d@t%
+  \dblvlin@ \multiply\d@t by 5 \kern\d@t}%
+\def\rem@inedwidth#1{%計算剩下的寬度之半，存在\d@r中
+  \d@t=\pb@xwidth \divide\d@t by 10 % 1/12 + 1/60 = 1/10
+  \d@r=\pb@xwidth \advance\d@r by-\d@t \advance\d@r by-\d@t %
+  \advance\d@r by-18pt %
   \setbox0=#1 %
-  \advance\dr by-\wd0 %文字的寬度
-  \advance\dr by-.7pt % 調整對齊
-  \divide\dr by 2}%
+  \advance\d@r by-\wd0 %文字的寬度
+  \advance\d@r by-.7pt % 調整對齊
+  \divide\d@r by 2}%
+\def\setpixboxwidth{ %計算圖片框寬度放在\dt中
+  \d@t=\pb@xheight \multiply\d@t by3 \divide\d@t by4 }%
+\def\rem@inedwidthpic{ %計算剩下的寬度存在d@r中
+  \d@r=\pb@xwidth \advance\d@r by-2.8pc %左第一框
+  \advance\d@r by -4pt %雙竪綫
+  \setpixboxwidth \multiply\d@t by2 %兩個圖片框
+  \advance\d@r by -\d@t %
+  \advance\d@r by -4pt \advance\d@r by -4pt %左右各有一個雙竪綫
+  \advance\d@r by -2.7pt}%
 %
 \def\quadrabox#1{%四層方框的主宏
 \offinterlineskip%
 \hbox{\vbox to 4pt{%第一方框
-  \dr=2pt\drawbox%
+  \d@r=2pt\dr@wbox%
   \vss}}%
-\dr=4pt\shrinkboxsize%
-\advance\boxheight by 2pt%
+\d@r=4pt\shrinkboxsize%
+\advance\pb@xheight by 2pt%
 \hbox{\kern4pt\vbox to 1pt{%第二方框
-  \dr=1pt\drawbox%
+  \d@r=1pt\dr@wbox%
   \vss}}%
-\dr=\boxheight \divide\dr by 5 \dt=\dr%第三框上下各留1/5空
-\advance\dr by1pt \shrinkboxsize%
-\vskip\dt %暫存，第四方框時橫向留空時要用
-\hbox{\kern5pt\kern\dt%
+\setgapvalue %設置二三層框之間的間距
+\shrinkboxsize %
+\vskip\d@t %暫存，第四方框時橫向留空時要用
+\hbox{\kern5pt\kern\d@t%
   \vbox to 3pt{%第三方框
-    \dr=1pt\drawbox%
+    \d@r=1pt\dr@wbox%
     \vss}}%
-\dr=3pt\shrinkboxsize%
-\hbox{\kern8pt\kern\dt\vbox{%第四方框
-   \hrule height1pt width\boxwidth %上横边4
-   \hbox to\boxwidth{%
-     \vrule width1pt height\boxheight % 1pt
+\d@r=3pt\shrinkboxsize%
+\hbox{\kern8pt\kern\d@t\vbox{%第四方框
+   \hrule height1pt width\pb@xwidth %上横边4
+   \hbox to\pb@xwidth{%
+     \vrule width1pt height\pb@xheight % 1pt
      \hbox{%
-       \lmultivrules %
-       %\tracingcommands=3 \tracingmacros=3
-       \remainedwidth{#1} %
-       \hskip\dr \hfil %
-       \vbox{\vfil \box0 \vskip7pt\vfil}% 
-       \hfil \hskip\dr %
-       \rmultivrules}%
-     \vrule width1pt height\boxheight\hss}%
-   \hrule height1pt width\boxwidth %下横边4
+       \ifpixbox %左右留圖片框
+           \hskip1.8pc \ifpagehdr\putp@gehdr\fi \hskip1pc %頁眉
+           \dblvlin@ %左第一框帶頁眉
+           \setpixboxwidth %計算圖片框寬度
+           \vbox to \pb@xheight{\hbox to \d@t{\pboxlpic\hss}} %
+           %\kern-.7pt
+           \dblvlin@ %左圖片框
+           \rem@inedwidthpic \kern\d@r \kern-1.4pt%中間文字留空
+           \dblvlin@ \setpixboxwidth %右圖片框
+           \vbox to \pb@xheight{\hbox to \d@t{\pboxrpic\hss}} %\kern-.7pt %
+       \else %普通四層框
+           \lmultivrul@s %
+           %\tracingcommands=3 \tracingmacros=3
+           \rem@inedwidth{#1} %
+           \hskip\d@r \hfil %
+           \vbox{\vfil \box0 \vskip7pt\vfil}% 
+           \hfil \hskip\d@r %
+           \rmultivrul@s %
+       \fi}%
+     \vrule width1pt height\pb@xheight\hss}%
+   \hrule height1pt width\pb@xwidth %下横边4
    }}%
 }%
 %
-\newcount\tmpmod
+\newcount\t@mpmod
 \def\modulo#1#2{ % 求余数
-    \tmpmod=#1 %
-    \divide\tmpmod by#2 \multiply\tmpmod by#2 \multiply\tmpmod by-1 %
-    \advance\tmpmod by #1}
+    \t@mpmod=#1 %
+    \divide\t@mpmod by#2 \multiply\t@mpmod by#2 \multiply\t@mpmod by-1 %
+    \advance\t@mpmod by #1}
 %用于设置从P5开始的正文段落形状的宏
-\newdimen\oddlskip \oddlskip=0pt
-\newdimen\evenlskip \evenlskip=0pt
-\newdimen\odtexthsize % 用來計算奇數頁文字寬度
-\newdimen\evtexthsize % 用來計算偶數頁文字寬度
-\def\slineil{\oddlskip\odtexthsize}%
-\def\twoslineil{\slineil\slineil}
-\def\threeslineil{\twoslineil\slineil}
-\def\fourslineil{\twoslineil\twoslineil}
-\def\fiveslineil{\threeslineil\twoslineil}%
-\def\sixslineil{\fiveslineil\slineil}%
-\def\llineil{\evenlskip\evtexthsize}%
-\def\twollineil{\llineil\llineil}
-\def\threellineil{\twollineil\llineil}
-\def\fourllineil{\twollineil\twollineil}
-\def\fivellineil{\threellineil\twollineil}%
-\def\sixllineil{\fivellineil\llineil}%
-\def\pfive{\fiveslineil \fivellineil}%
-\def\fourpfive{\pfive\pfive\pfive\pfive}%
-\def\sixteenpfive{\fourpfive\fourpfive\fourpfive\fourpfive}%
-\def\thirtytwopfive{\sixteenpfive\sixteenpfive\sixteenpfive\sixteenpfive}%
-\def\psix{\sixslineil \sixllineil}%
-\def\fourpsix{\psix\psix\psix\psix}%
-\def\sixteenpsix{\fourpsix\fourpsix\fourpsix\fourpsix}%
-\def\thirtytwopsix{\sixteenpsix\sixteenpsix\sixteenpsix\sixteenpsix}%
+\newdimen\@ddlskip \@ddlskip=0pt
+\newdimen\@venlskip \@venlskip=0pt
+\newdimen\@dtexthsize % 用來計算奇數頁文字寬度
+\newdimen\@vtexthsize % 用來計算偶數頁文字寬度
+\def\slin@il{\@ddlskip\@dtexthsize}%
+\def\twoslin@il{\slin@il\slin@il}
+\def\threeslin@il{\twoslin@il\slin@il}
+\def\fourslin@il{\twoslin@il\twoslin@il}
+\def\fiveslin@il{\threeslin@il\twoslin@il}%
+\def\sixslin@il{\fiveslin@il\slin@il}%
+\def\llin@il{\@venlskip\@vtexthsize}%
+\def\twollin@il{\llin@il\llin@il}
+\def\threellin@il{\twollin@il\llin@il}
+\def\fourllin@il{\twollin@il\twollin@il}
+\def\fivellin@il{\threellin@il\twollin@il}%
+\def\sixllin@il{\fivellin@il\llin@il}%
+\def\pfiv@{\fiveslin@il \fivellin@il}%
+\def\fourpfiv@{\pfiv@\pfiv@\pfiv@\pfiv@}%
+\def\sixteenpfiv@{\fourpfiv@\fourpfiv@\fourpfiv@\fourpfiv@}%
+\def\thirtytwopfiv@{\sixteenpfiv@\sixteenpfiv@\sixteenpfiv@\sixteenpfiv@}%
+\def\p@six{\sixslin@il \sixllin@il}%
+\def\f@urpsix{\p@six\p@six\p@six\p@six}%
+\def\sixte@npsix{\f@urpsix\f@urpsix\f@urpsix\f@urpsix}%
+\def\thirtytw@psix{\sixte@npsix\sixte@npsix\sixte@npsix\sixte@npsix}%
 \def\setparshape#1#2{%{5/6}{该段文字大致最多的页数(<32*2)}
     %设置该段文字为5/6個短行，接5/6個長行
-    \odtexthsize=\hsize %
-    \evtexthsize=\hsize %
+    \@dtexthsize=\hsize %
+    \@vtexthsize=\hsize %
     \ifinnerframe % 帶内框，外框已經左移了12pt(0.42cm)
-        \advance\odtexthsize by-2.4cm % 帶内框時P5左右各空1.2cm(36pt)
-        \oddlskip=35pt \evenlskip=0pt % P6左右皆不留空
+        \advance\@dtexthsize by-2.4cm % 帶内框時P5左右各空1.2cm(36pt)
+        \@ddlskip=35pt \@venlskip=0pt % P6左右皆不留空
+        \ifpixbox % 内框左右有圖片
+            \estim@tepixboxwidth % 預估圖片框寬度，設置\pixb@xwidth
+            \advance\@dtexthsize by -\pixb@xwidth %
+            \advance\@dtexthsize by -\pixb@xwidth %
+            \advance\@dtexthsize by -4mm %
+            \advance\@ddlskip by \pixb@xwidth %
+            \advance\@ddlskip by 2mm %
+            %\message{"oddlskip=\the\@ddlskip."}
+        \fi
     \else % 不帶内框
-        \advance\odtexthsize by -2.16cm % 不帶内框時P5左2.1cm右0.9cm
-        %\showthe\odtexthsize %
-        \oddlskip=48.3pt \evenlskip=14pt % P5 2.1cm(60pt) / P6 0.9cm(26pt)
-        \advance\evtexthsize by-0.96cm % P6左右黑邊合計1.8cm
-        %\showthe\evtexthsize %
+        \advance\@dtexthsize by -2.16cm % 不帶内框時P5左2.1cm右0.9cm
+        %\showthe\@dtexthsize %
+        \@ddlskip=48.3pt \@venlskip=14pt % P5 2.1cm(60pt) / P6 0.9cm(26pt)
+        \advance\@vtexthsize by-0.96cm % P6左右黑邊合計1.8cm
+        %\showthe\@vtexthsize %
     \fi % \ifinnerframe
     \ifnum#1=5 %
-        \ifnum#2<4 \parshape=40 \fourpfive %
-        \else\ifnum#2<16 \parshape=160 \sixteenpfive %
-        \else \parshape=640 \thirtytwopfive \fi\fi %
+        \ifnum#2<4 \parshape=40 \fourpfiv@ %
+        \else\ifnum#2<16 \parshape=160 \sixteenpfiv@ %
+        \else \parshape=640 \thirtytwopfiv@ \fi\fi %
     \else\ifnum#1=6 %
-        \ifnum#2<4 \parshape=48 \fourpsix %
-        \else\ifnum#2<16 \parshape=192 \sixteenpsix %
-        \else \parshape=768 \thirtytwopsix \fi\fi\fi\fi} %
-\def\setrestedparshape#1#2{ %{5/6}{一個正反面中還剩下的行數}一段不超過2*16頁
+        \ifnum#2<4 \parshape=48 \f@urpsix %
+        \else\ifnum#2<16 \parshape=192 \sixte@npsix %
+        \else \parshape=768 \thirtytw@psix \fi\fi\fi\fi} %
+\def\setrestedparsh@pe#1#2{ %{5/6}{一個正反面中還剩下的行數}一段不超過2*16頁
     \ifnum#1=5 %
         \ifcase#2 \relax %
-        \or \parshape=161 \llineil \sixteenpfive %1行
-        \or \parshape=162 \twollineil \sixteenpfive %2行
-        \or \parshape=163 \threellineil \sixteenpfive %3行
-        \or \parshape=164 \fourllineil \sixteenpfive %4行
-        \or \parshape=165 \fivellineil \sixteenpfive %5行
-        \or \parshape=166 \slineil\fivellineil \sixteenpfive %1+5行
-        \or \parshape=167 \twoslineil\fivellineil \sixteenpfive %2+5行
-        \or \parshape=168 \threeslineil\fivellineil \sixteenpfive %3+5行
-        \or \parshape=169 \fourslineil\fivellineil \sixteenpfive \fi %4+5行
+        \or \parshape=161 \llin@il \sixteenpfiv@ %1行
+        \or \parshape=162 \twollin@il \sixteenpfiv@ %2行
+        \or \parshape=163 \threellin@il \sixteenpfiv@ %3行
+        \or \parshape=164 \fourllin@il \sixteenpfiv@ %4行
+        \or \parshape=165 \fivellin@il \sixteenpfiv@ %5行
+        \or \parshape=166 \slin@il\fivellin@il \sixteenpfiv@ %1+5行
+        \or \parshape=167 \twoslin@il\fivellin@il \sixteenpfiv@ %2+5行
+        \or \parshape=168 \threeslin@il\fivellin@il \sixteenpfiv@ %3+5行
+        \or \parshape=169 \fourslin@il\fivellin@il \sixteenpfiv@ \fi %4+5行
     \else\ifnum#1=6 %
         \ifcase#2 \relax %
-        \or \parshape=193 \llineil \sixteenpsix %1
-        \or \parshape=194 \twollineil \sixteenpsix %2
-        \or \parshape=195 \threellineil \sixteenpsix %3
-        \or \parshape=196 \fourllineil \sixteenpsix %4
-        \or \parshape=197 \fivellineil \sixteenpsix %5
-        \or \parshape=198 \sixllineil \sixteenpsix %6
-        \or \parshape=199 \slineil\sixllineil \sixteenpsix %1+6
-        \or \parshape=200 \twoslineil\sixllineil \sixteenpsix %2+6
-        \or \parshape=201 \threeslineil\sixllineil \sixteenpsix %3+6
-        \or \parshape=202 \fourslineil\sixllineil \sixteenpsix %4+6
-        \or \parshape=203 \fiveslineil\sixllineil \sixteenpsix \fi %5+6
+        \or \parshape=193 \llin@il \sixte@npsix %1
+        \or \parshape=194 \twollin@il \sixte@npsix %2
+        \or \parshape=195 \threellin@il \sixte@npsix %3
+        \or \parshape=196 \fourllin@il \sixte@npsix %4
+        \or \parshape=197 \fivellin@il \sixte@npsix %5
+        \or \parshape=198 \sixllin@il \sixte@npsix %6
+        \or \parshape=199 \slin@il\sixllin@il \sixte@npsix %1+6
+        \or \parshape=200 \twoslin@il\sixllin@il \sixte@npsix %2+6
+        \or \parshape=201 \threeslin@il\sixllin@il \sixte@npsix %3+6
+        \or \parshape=202 \fourslin@il\sixllin@il \sixte@npsix %4+6
+        \or \parshape=203 \fiveslin@il\sixllin@il \sixte@npsix \fi %5+6
     \fi\fi} %
-\newcount\prevlinesremained \prevlinesremained=0 %上一段所剩最後一頁中行
-\newcount\ti \newcount\tj % 臨時變量
+\newcount\prevlinesrem@ined \prevlinesrem@ined=0 %上一段所剩最後一頁中行
+\newcount\t@i \newcount\t@j % 臨時變量
 \def\setnewparshape#1{ %根據上一段剩餘的行數設置新一段的parshape
-    \tj=#1 \multiply\tj by 2 %
-    \ti=\prevgraf \advance\ti by \prevlinesremained %加上上一段剩下的行
-    %\showthe\ti \showthe\tj %
-    \modulo{\the\ti}{\the\tj} \prevlinesremained=\tmpmod %
-    \advance\tj by -\prevlinesremained %
-    %\showthe\tj \showthe\prevlinesremained %
-    \setrestedparshape{#1}{\tj}}
-%簡單的單層方框
+    %\message@!\the\prevlinesrem@ined}
+    \t@j=#1 \multiply\t@j by 2 %
+    \t@i=\prevgraf \advance\t@i by \prevlinesrem@ined %加上上一段剩下的行數
+    %\showthe\t@i \showthe\t@j %
+    \modulo{\the\t@i}{\the\t@j} %計算本段開始時已排滿的行數
+    \prevlinesrem@ined=\t@mpmod %更新\prevlinesrem@ined下一段要用
+    \advance\t@j by -\t@mpmod % 一葉中總行數減去已排滿的行數
+    %\showthe\t@j \s@owthe\prevlinesrem@ined %
+    \setrestedparsh@pe{#1}{\t@j}}
+%簡單的單層標題方框
 \def\titlebox#1{\hbox{\vbox{
 \hrule height1pt\hbox{\vrule width1pt\kern4pc\vrule width1pt
 \vbox{\kern9pt#1\kern9pt}\vrule width1pt\kern4pc\vrule width1pt}\hrule height1pt}
 }}
-%自動加在奇數頁首的雲頭符
+%設置自動加在奇數頁首的雲頭符
 \newbox\pghdr%
 \TibHeaderBox=\pghdr%
 \def\header{{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}}%
