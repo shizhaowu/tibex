@@ -38,12 +38,16 @@
 \parskip=0pt \parfillskip=0pt%
 %
 \newdimen\pb@xwidth \newdimen\pb@xheight \newdimen\ruleht@%
+\newdimen\upm@rgin \upm@rgin=0pt%上邊框與文字的邊距
 \newdimen\tmp@dim %
+%\setboxupmargin設置上文字邊距
+\def\setboxupmargin#1{\upm@rgin=#1}
 % 變量初始化宏，在\output裡調用
 \def\setboxsize{%
-  \pb@xwidth=\hsize \pb@xheight=\vsize \ruleht@=1pt%
-  \advance\pb@xwidth by 18pt \advance\pb@xwidth by 4.6mm%
-  \advance\pb@xheight by 27pt \advance\pb@xheight by \maxdepth}%
+  \pb@xwidth=\hsize \pb@xheight=\vsize \ruleht@=1pt %
+  \advance\pb@xwidth by 18pt \advance\pb@xwidth by 4.6mm %
+  \advance\pb@xheight by 12pt \advance\pb@xheight by \upm@rgin \advance\pb@xheight by \upm@rgin %
+  \advance\pb@xheight by \maxdepth }%
 \def\d@rawpbox{%用ruleht@中所指定的線寬畫pboxwidth*pb@xheight方框
   \hrule height\ruleht@ width\pb@xwidth %上横边
   \hbox{%
@@ -83,7 +87,7 @@
 \newif\ifframe \framefalse % 是否加最外邊框
 \newif\ifinnerframe \innerframetrue % 是否不加内框
 \def\noinnerframe{ % 不加内框，祇加上左頁眉並留空
-    \innerframefalse % 尚需修改setparshape，將其中硬編碼的數改爲用變量的
+    \innerframefalse %
     }
 \newif\ifmultiframe \multiframefalse % 臨時變量，是否是奇數頁加三内框
 %
@@ -135,7 +139,7 @@
   \ifframe%
     \setboxsize %初始化計算方框大小的寄存器
     \offinterlineskip %
-    \vskip-10pt%
+    \vskip-4pt \vskip-\upm@rgin %
     \hbox{\kern-16pt\vbox to 4pt{ %粗外框
        \ruleht@=2pt \d@rawpbox %
        \vss}}%
@@ -153,7 +157,7 @@
                     \hrule width36pt height\ruleht@%
                     \hbox to 36pt{%
                         \vrule width\ruleht@ height\pb@xheight%
-                        \hfil\kern10pt\leftpagehd@r\hfil % 左页眉文字
+                        \hfil\kern15pt\leftpagehd@r\hfil % 左页眉文字
                         \vrule width\ruleht@ height\pb@xheight%
                     }%
                     \hrule width36pt height\ruleht@ \vss} %
@@ -180,7 +184,7 @@
                     }\vss}} \fi %\ifodd
     \fi %\ifinnerframe 
   \fi %\ifframe
-  \vskip9pt
+  \vskip2pt \vskip\upm@rgin %
   \vbox to \vsize{%页面内容
       #1 \boxmaxdepth=\maxdepth }%
   }%
@@ -191,10 +195,13 @@
 }%
 %设置为输出宏
 \output{\onepageout{\unvbox255}}
-%用於P1,P2,P3的四層方框
+%
+% 用於P1,P2,P3的四層方框
+%
 \newif\ifpagehdr\pagehdrfalse %是否在四层方框中放左页眉
 %\newdimen\b@xwidth %四层方框宽
 %\newdimen\b@xheight %高
+\newcount\quadboxgapstyle \quadboxgapstyle=1
 \newif\ifpixbox\pixboxfalse %是否左右留圖片框 %普通四層框
 \newdimen\d@r %用来传递dimension的临时寄存器
 \newdimen\d@t %存放標題兩邊的長框寬度的臨時寄存器
@@ -203,12 +210,16 @@
 \def\shrinkboxsize{%将宽、高分别减少两倍\d@r
   \advance\pb@xwidth by-\d@r \advance\pb@xwidth by-\d@r %
   \advance\pb@xheight by-\d@r \advance\pb@xheight by-\d@r}%
-\def\setgapvalue{%根據\ifpixbox來設置二三層框間距
-  \ifpixbox % 帶圖片的四層框
-      \d@r=1.6pc \d@t=\d@r%
-  \else % 普通四層框
-      \d@r=\pb@xheight \divide\d@r by 5 \d@t=\d@r%第三框上下各留1/5空
-      \advance\d@r by1pt \fi}%
+\def\setg@pvalue{%根據\ifpixbox來設置二三層框間距
+    \ifpixbox % 帶圖片的四層框
+        \d@r=1.6pc \d@t=\d@r%
+    \else % 普通四層框
+        \ifnum\quadboxgapstyle=1 %風格1，二、三框間上下空1/5
+            \d@r=\pb@xheight \divide\d@r by 5 \d@t=\d@r %
+            \advance\d@r by1pt %
+        \else\ifnum\quadboxgapstyle=2 
+            \d@r=2.4pc \d@t=\d@r% 二三層間小間距
+        \fi\fi\fi}%
 \def\dblvlin@{%
   \dblvrule\pb@xheight}%
 \def\dr@wbox{%用d@r中所指定的線寬畫方框
@@ -270,8 +281,9 @@
 \advance\pb@xheight by 2pt%
 \hbox{\kern4pt\vbox to 1pt{%第二方框
   \d@r=1pt\dr@wbox%
+
   \vss}}%
-\setgapvalue %設置二三層框之間的間距
+\setg@pvalue %設置二三層框之間的間距
 \shrinkboxsize %
 \vskip\d@t %暫存，第四方框時橫向留空時要用
 \hbox{\kern5pt\kern\d@t%
@@ -316,62 +328,73 @@
 %用于设置从P5开始的正文段落形状的宏
 \newdimen\@ddlskip \@ddlskip=0pt
 \newdimen\@venlskip \@venlskip=0pt
-\newdimen\@dtexthsize % 用來計算奇數頁文字寬度
-\newdimen\@vtexthsize % 用來計算偶數頁文字寬度
-\def\slin@il{\@ddlskip\@dtexthsize}%
-\def\twoslin@il{\slin@il\slin@il}
-\def\threeslin@il{\twoslin@il\slin@il}
-\def\fourslin@il{\twoslin@il\twoslin@il}
+\newdimen\@ddtexthsize % 用來計算奇數頁文字寬度
+\newdimen\ev@ntexthsize % 用來計算偶數頁文字寬度
+\def\slin@il{\@ddlskip\@ddtexthsize}% short line indent length
+\def\twoslin@il{\slin@il\slin@il}%兩個短行
+\def\threeslin@il{\twoslin@il\slin@il}%
+\def\fourslin@il{\twoslin@il\twoslin@il}%
 \def\fiveslin@il{\threeslin@il\twoslin@il}%
-\def\sixslin@il{\fiveslin@il\slin@il}%
-\def\llin@il{\@venlskip\@vtexthsize}%
-\def\twollin@il{\llin@il\llin@il}
-\def\threellin@il{\twollin@il\llin@il}
-\def\fourllin@il{\twollin@il\twollin@il}
+\def\sixslin@il{\threeslin@il\threeslin@il}%
+\def\sevenslin@il{\fourslin@il\threeslin@il}%最多一頁七個短行
+\def\llin@il{\@venlskip\ev@ntexthsize}%
+\def\twollin@il{\llin@il\llin@il}%
+\def\threellin@il{\twollin@il\llin@il}%
+\def\fourllin@il{\twollin@il\twollin@il}%
 \def\fivellin@il{\threellin@il\twollin@il}%
-\def\sixllin@il{\fivellin@il\llin@il}%
+\def\sixllin@il{\threellin@il\threellin@il}%
+\def\sevenllin@il{\fourllin@il\threellin@il}%最多一頁七個長行
 \def\pfiv@{\fiveslin@il \fivellin@il}%
 \def\fourpfiv@{\pfiv@\pfiv@\pfiv@\pfiv@}%
 \def\sixteenpfiv@{\fourpfiv@\fourpfiv@\fourpfiv@\fourpfiv@}%
-\def\thirtytwopfiv@{\sixteenpfiv@\sixteenpfiv@\sixteenpfiv@\sixteenpfiv@}%
+\def\thirtytwopfiv@{\sixteenpfiv@\sixteenpfiv@}%
 \def\p@six{\sixslin@il \sixllin@il}%
 \def\f@urpsix{\p@six\p@six\p@six\p@six}%
 \def\sixte@npsix{\f@urpsix\f@urpsix\f@urpsix\f@urpsix}%
-\def\thirtytw@psix{\sixte@npsix\sixte@npsix\sixte@npsix\sixte@npsix}%
-\def\setparshape#1#2{%{5/6}{该段文字大致最多的页数(<32*2)}
+\def\thirtytw@psix{\sixte@npsix\sixte@npsix}%
+\def\psev@n{\sevenslin@il\sevenllin@il}
+\def\fourpsev@n{\psev@n\psev@n\psev@n\psev@n}%
+\def\sixteensev@n{\fourpsev@n\fourpsev@n\fourpsev@n\fourpsev@n}%
+\def\thirtytwopsev@n{\sixteenpsev@n\sixteenpsev@n}%
+\def\setparshape#1#2{%{#1=5/6/7}{#2=该段文字大致最多的页数(<32*2)}
     %设置该段文字为5/6個短行，接5/6個長行
-    \@dtexthsize=\hsize %
-    \@vtexthsize=\hsize %
+    \@ddtexthsize=\hsize %
+    \ev@ntexthsize=\hsize \advance\ev@ntexthsize by 4pt %
     \ifinnerframe % 帶内框，外框已經左移了12pt(0.42cm)
-        \advance\@dtexthsize by-2.4cm % 帶内框時P5左右各空1.2cm(36pt)
-        \@ddlskip=35pt \@venlskip=0pt % P6左右皆不留空
+        \advance\@ddtexthsize by-2.4cm % 帶内框時P5左右各空1.2cm(36pt)
+        \@ddlskip=35pt \@venlskip=-2pt % P6左右皆不留空
         \ifpixbox % 内框左右有圖片
             \estim@tepixboxwidth % 預估圖片框寬度，設置\pixb@xwidth
-            \advance\@dtexthsize by -\pixb@xwidth %
-            \advance\@dtexthsize by -\pixb@xwidth %
-            \advance\@dtexthsize by -4mm %
+            \advance\@ddtexthsize by -\pixb@xwidth %
+            \advance\@ddtexthsize by -\pixb@xwidth %
+            \advance\@ddtexthsize by -4mm %
             \advance\@ddlskip by \pixb@xwidth %
             \advance\@ddlskip by 2mm %
             %\message{"oddlskip=\the\@ddlskip."}
         \fi
     \else % 不帶内框
-        \advance\@dtexthsize by -2.16cm % 不帶内框時P5左2.1cm右0.9cm
-        %\showthe\@dtexthsize %
+        \advance\@ddtexthsize by -2.16cm % 不帶内框時P5左2.1cm右0.9cm
+        %\showthe\@ddtexthsize %
         \@ddlskip=48.3pt \@venlskip=14pt % P5 2.1cm(60pt) / P6 0.9cm(26pt)
-        \advance\@vtexthsize by-0.96cm % P6左右黑邊合計1.8cm
-        %\showthe\@vtexthsize %
+        \advance\ev@ntexthsize by-0.96cm % P6左右黑邊合計1.8cm
+        %\showthe\ev@ntexthsize %
     \fi % \ifinnerframe
-    \ifnum#1=5 %
-        \ifnum#2<4 \parshape=40 \fourpfiv@ %
-        \else\ifnum#2<16 \parshape=160 \sixteenpfiv@ %
-        \else \parshape=640 \thirtytwopfiv@ \fi\fi %
+    \ifnum#1=5 % 設置n頁的段落形狀
+        \ifnum#2<5 \parshape=40 \fourpfiv@ %4*2頁
+        \else\ifnum#2<17 \parshape=160 \sixteenpfiv@ %16*2頁
+        \else \parshape=320 \thirtytwopfiv@ \fi\fi %最多不超過32*2頁
     \else\ifnum#1=6 %
-        \ifnum#2<4 \parshape=48 \f@urpsix %
-        \else\ifnum#2<16 \parshape=192 \sixte@npsix %
-        \else \parshape=768 \thirtytw@psix \fi\fi\fi\fi} %
-\def\setrestedparsh@pe#1#2{ %{5/6}{一個正反面中還剩下的行數}一段不超過2*16頁
+        \ifnum#2<5 \parshape=48 \f@urpsix %
+        \else\ifnum#2<17 \parshape=192 \sixte@npsix %
+        \else \parshape=384 \thirtytw@psix \fi\fi %
+    \else\ifnum#1=7 %
+        \ifnum#2<5 \parshape=56 \fourpsev@n %
+        \else\ifnum#2<17 \parshape=224 \sixteenpsev@n %
+        \else \parshape=448 \thirtytwopsev@n \fi\fi %
+    \fi\fi\fi} %
+\def\setrestedparsh@pe#1#2{ %{5/6/7}{一個正反面中還剩下的行數}祇考虑一段2*16頁
     \ifnum#1=5 %
-        \ifcase#2 \relax %
+        \ifcase#2 \parshape=160 \sixteenpsev@n \relax %
         \or \parshape=161 \llin@il \sixteenpfiv@ %1行
         \or \parshape=162 \twollin@il \sixteenpfiv@ %2行
         \or \parshape=163 \threellin@il \sixteenpfiv@ %3行
@@ -382,7 +405,7 @@
         \or \parshape=168 \threeslin@il\fivellin@il \sixteenpfiv@ %3+5行
         \or \parshape=169 \fourslin@il\fivellin@il \sixteenpfiv@ \fi %4+5行
     \else\ifnum#1=6 %
-        \ifcase#2 \relax %
+        \ifcase#2 \parshape=192 \sixte@npsix \relax %
         \or \parshape=193 \llin@il \sixte@npsix %1
         \or \parshape=194 \twollin@il \sixte@npsix %2
         \or \parshape=195 \threellin@il \sixte@npsix %3
@@ -394,10 +417,25 @@
         \or \parshape=201 \threeslin@il\sixllin@il \sixte@npsix %3+6
         \or \parshape=202 \fourslin@il\sixllin@il \sixte@npsix %4+6
         \or \parshape=203 \fiveslin@il\sixllin@il \sixte@npsix \fi %5+6
-    \fi\fi} %
+    \else\ifnum#1=7 %
+        \ifcase#2 \parshape=224 \sixteenpsev@n \relax %
+        \or \parshape=225 \llin@il \sixteenpsev@n %前段剩1行
+        \or \parshape=226 \twolline@il \sixteenpsev@n %
+        \or \parshape=227 \threelline@il \sixteenpsev@n %
+        \or \parshape=228 \fourlline@il \sixteenpsev@n %
+        \or \parshape=229 \fivelline@il \sixteenpsev@n %
+        \or \parshape=230 \sixlline@il \sixteenpsev@n %
+        \or \parshape=231 \sevenllin@il \sixteenpsev@n %
+        \or \parshape=232 \slin@il\sevenllin@il \sixteenpsev@n %1+7
+        \or \parshape=233 \twoslin@il\sevenllin@il \sixteenpsev@n %
+        \or \parshape=234 \threeslin@il\sevenllin@il \sixteenpsev@n %
+        \or \parshape=235 \fourslin@il\sevenllin@il \sixteenpsev@n %
+        \or \parshape=236 \fiveslin@il\sevenllin@il \sixteenpsev@n %
+        \or \parshape=237 \sixslin@il\sevenllin@il \sixteenpsev@n \fi %
+    \fi\fi\fi} %
 \newcount\prevlinesrem@ined \prevlinesrem@ined=0 %上一段所剩最後一頁中行
 \newcount\t@i \newcount\t@j % 臨時變量
-\def\setnewparshape#1{ %根據上一段剩餘的行數設置新一段的parshape
+\def\setnewparshape#1{ %{5/6/7}根據上一段剩餘的行數設置新一段的parshape
     %\message@!\the\prevlinesrem@ined}
     \t@j=#1 \multiply\t@j by 2 %
     \t@i=\prevgraf \advance\t@i by \prevlinesrem@ined %加上上一段剩下的行數
