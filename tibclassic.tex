@@ -354,10 +354,10 @@
 \def\thirtytw@psix{\sixte@npsix\sixte@npsix}%
 \def\psev@n{\sevenslin@il\sevenllin@il}
 \def\fourpsev@n{\psev@n\psev@n\psev@n\psev@n}%
-\def\sixteensev@n{\fourpsev@n\fourpsev@n\fourpsev@n\fourpsev@n}%
+\def\sixteenpsev@n{\fourpsev@n\fourpsev@n\fourpsev@n\fourpsev@n}%
 \def\thirtytwopsev@n{\sixteenpsev@n\sixteenpsev@n}%
 \def\setparshape#1#2{%{#1=5/6/7}{#2=该段文字大致最多的页数(<32*2)}
-    %设置该段文字为5/6個短行，接5/6個長行
+    %设置该段文字为5/6/7個短行，接5/6/7個長行
     \@ddtexthsize=\hsize %
     \ev@ntexthsize=\hsize \advance\ev@ntexthsize by 4pt %
     \ifinnerframe % 帶内框，外框已經左移了12pt(0.42cm)
@@ -372,7 +372,7 @@
             \advance\@ddlskip by 2mm %
             %\message{"oddlskip=\the\@ddlskip."}
         \fi
-    \else % 不帶内框
+    \else % 不帶内框，排版完成後再嵌入僅含有左右黑條的P45.pdf
         \advance\@ddtexthsize by -2.16cm % 不帶内框時P5左2.1cm右0.9cm
         %\showthe\@ddtexthsize %
         \@ddlskip=48.3pt \@venlskip=14pt % P5 2.1cm(60pt) / P6 0.9cm(26pt)
@@ -393,6 +393,7 @@
         \else \parshape=448 \thirtytwopsev@n \fi\fi %
     \fi\fi\fi} %
 \def\setrestedparsh@pe#1#2{ %{5/6/7}{一個正反面中還剩下的行數}祇考虑一段2*16頁
+    %\message{arg1=#1, arg2=#2}
     \ifnum#1=5 %
         \ifcase#2 \parshape=160 \sixteenpsev@n \relax %
         \or \parshape=161 \llin@il \sixteenpfiv@ %1行
@@ -403,7 +404,8 @@
         \or \parshape=166 \slin@il\fivellin@il \sixteenpfiv@ %1+5行
         \or \parshape=167 \twoslin@il\fivellin@il \sixteenpfiv@ %2+5行
         \or \parshape=168 \threeslin@il\fivellin@il \sixteenpfiv@ %3+5行
-        \or \parshape=169 \fourslin@il\fivellin@il \sixteenpfiv@ \fi %4+5行
+        \or \parshape=169 \fourslin@il\fivellin@il \sixteenpfiv@ %4+5行
+        \or \parshape=160 \sixteenpfiv@ \fi %5+5
     \else\ifnum#1=6 %
         \ifcase#2 \parshape=192 \sixte@npsix \relax %
         \or \parshape=193 \llin@il \sixte@npsix %1
@@ -416,22 +418,24 @@
         \or \parshape=200 \twoslin@il\sixllin@il \sixte@npsix %2+6
         \or \parshape=201 \threeslin@il\sixllin@il \sixte@npsix %3+6
         \or \parshape=202 \fourslin@il\sixllin@il \sixte@npsix %4+6
-        \or \parshape=203 \fiveslin@il\sixllin@il \sixte@npsix \fi %5+6
+        \or \parshape=203 \fiveslin@il\sixllin@il \sixte@npsix %5+6
+        \or \parshape=192 \sixte@npsix \fi %6+6 
     \else\ifnum#1=7 %
         \ifcase#2 \parshape=224 \sixteenpsev@n \relax %
         \or \parshape=225 \llin@il \sixteenpsev@n %前段剩1行
-        \or \parshape=226 \twolline@il \sixteenpsev@n %
-        \or \parshape=227 \threelline@il \sixteenpsev@n %
-        \or \parshape=228 \fourlline@il \sixteenpsev@n %
-        \or \parshape=229 \fivelline@il \sixteenpsev@n %
-        \or \parshape=230 \sixlline@il \sixteenpsev@n %
+        \or \parshape=226 \twollin@il \sixteenpsev@n %
+        \or \parshape=227 \threellin@il \sixteenpsev@n %
+        \or \parshape=228 \fourllin@il \sixteenpsev@n %
+        \or \parshape=229 \fivellin@il \sixteenpsev@n %
+        \or \parshape=230 \sixllin@il \sixteenpsev@n %
         \or \parshape=231 \sevenllin@il \sixteenpsev@n %
         \or \parshape=232 \slin@il\sevenllin@il \sixteenpsev@n %1+7
         \or \parshape=233 \twoslin@il\sevenllin@il \sixteenpsev@n %
         \or \parshape=234 \threeslin@il\sevenllin@il \sixteenpsev@n %
         \or \parshape=235 \fourslin@il\sevenllin@il \sixteenpsev@n %
         \or \parshape=236 \fiveslin@il\sevenllin@il \sixteenpsev@n %
-        \or \parshape=237 \sixslin@il\sevenllin@il \sixteenpsev@n \fi %
+        \or \parshape=237 \sixslin@il\sevenllin@il \sixteenpsev@n %
+        \or \parshape=224 \sixteenpsev@n \relax \fi %
     \fi\fi\fi} %
 \newcount\prevlinesrem@ined \prevlinesrem@ined=0 %上一段所剩最後一頁中行
 \newcount\t@i \newcount\t@j % 臨時變量
@@ -444,7 +448,7 @@
     \prevlinesrem@ined=\t@mpmod %更新\prevlinesrem@ined下一段要用
     \advance\t@j by -\t@mpmod % 一葉中總行數減去已排滿的行數
     %\showthe\t@j \s@owthe\prevlinesrem@ined %
-    \setrestedparsh@pe{#1}{\t@j}}
+    \setrestedparsh@pe{#1}{\the\t@j}}
 %簡單的單層標題方框
 \def\titlebox#1{\hbox{\vbox{
 \hrule height1pt\hbox{\vrule width1pt\kern4pc\vrule width1pt
