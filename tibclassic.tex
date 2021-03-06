@@ -358,6 +358,7 @@
 \def\thirtytwopsev@n{\sixteenpsev@n\sixteenpsev@n}%
 \def\setparshape#1#2{%{#1=5/6/7}{#2=该段文字大致最多的页数(<32*2)}
     %设置该段文字为5/6/7個短行，接5/6/7個長行
+    \prevlinesrem@ined=0
     \@ddtexthsize=\hsize %
     \ev@ntexthsize=\hsize \advance\ev@ntexthsize by 4pt %
     \ifinnerframe % 帶内框，外框已經左移了12pt(0.42cm)
