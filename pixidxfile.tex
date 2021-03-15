@@ -1,0 +1,85 @@
+%
+% 處理圖片索引文件的宏
+%
+\newread\pixidxfil@ %
+\newcount\pixp@geno %索引文件中的頁碼
+\newtoks\pixa@ % 第一個圖片文件名
+\newtoks\pixb@ % 第二
+\newtoks\pixc@ % 第三
+\newcount\num@pixs % 文件名個數
+\newtoks\tok@i\newtoks\tok@j
+\def\pboxlpic{} %左圖片宏
+\def\pboxrpic{} %右圖片宏
+\def\splitw@rds#1{%
+    \begingroup
+    \edef\@tempa{#1\space}%
+    \expandafter\endgroup
+    \expandafter\readw@rds\@tempa\relax}
+%
+\def\readw@rds#1 #2\relax{%
+    \dow@rd{#1}%  #1 = substr, #2 = rest of string
+    \begingroup
+    \ifx\relax#2\relax  % is #2 empty?
+        \def\next{\endgroup\endtestw@rds}% your own end-macro if required
+    \else
+        \def\next{\endgroup\readw@rds#2\relax}%
+    \fi
+    \next
+}
+\def\dow@rd#1{ %將解析出的文件名存入變量
+% \message{BEGIN(numfiles=\the\num@pixs.)}
+  \ifcase\num@pixs %
+      \global\pixa@={#1} \global\advance\num@pixs by 1 % 0
+      \or \global\pixb@={#1} \global\advance\num@pixs by 1 % 1
+      \or \global\pixc@={#1} \global\advance\num@pixs by 1 % 2
+  \else
+      \relax %
+      %\message{END(numfiles=\the\num@pixs.)} 
+  \fi
+}
+\def\endtestw@rds{} %
+\def\reinitvars{ %重置變量
+    \global\num@pixs=0 %清零
+    \global\pixa@={} %
+    \global\pixb@={} %
+    \global\pixc@={} %
+}
+\def\getpixfilen@mes#1{ %解析參數一中的文件名
+  \splitw@rds{#1} %
+  \ifnum\num@pixs=2 %
+      \xdef\pboxlpic{\setppix{\the\pixa@}} %
+      \xdef\pboxrpic{\setppix{\the\pixb@}} %
+  \else % 先祇支持左右兩個圖片的，其他情況用空代碼
+      \xdef\pboxlpic{} %
+      \xdef\pboxrpic{} %
+  \fi %
+  %\message{"pageno=\the\pixp@geno, num of pixs=\the\num@pixs}
+  %\message{a=\the\pixa@, b=\the\pixb@, c=\the\pixc@." }
+}
+\def\readp@gepixs{ %讀入一組頁碼/圖片文件名
+  \ifeof\pixidxfil@ \relax % 結束了
+  \else %
+    \read\pixidxfil@ to \pixidxline %
+    \expandafter\ifx\expandafter\relax\pixidxline %
+        \relax %
+    \else
+        \global\pixp@geno=\pixidxline %
+        %\message{'pgno line is \pixidxline'} %
+        \read\pixidxfil@ to \pixidxline %
+        \getpixfilen@mes{\pixidxline} %
+    \fi
+  \fi %
+  %\message{pix pgno=\the\pixp@geno.} %
+  %\message{pix fnames=\pixidxline.} %
+}
+\def\setpixidx#1{ %打開索引文件，讀入第一組頁碼和文件名
+  \pixboxtrue %
+  \endlinechar=-1 %
+  \openin\pixidxfil@=#1 %
+  \readp@gepixs %
+} %
+\def\nextp@gepixs{ %
+  \ifnum\pageno=\pixp@geno %當前頁已經輸出完了圖片，讀入下一組
+      \reinitvars \readp@gepixs %
+  \fi %
+} %
