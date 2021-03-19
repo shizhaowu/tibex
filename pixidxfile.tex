@@ -7,7 +7,7 @@
 \newtoks\pixb@ % 第二
 \newtoks\pixc@ % 第三
 \newcount\num@pixs % 文件名個數
-\newtoks\tok@i\newtoks\tok@j
+%\newtoks\tok@i\newtoks\tok@j
 \def\pboxlpic{} %左圖片宏
 \def\pboxrpic{} %右圖片宏
 \def\splitw@rds#1{%
@@ -57,7 +57,7 @@
   %\message{a=\the\pixa@, b=\the\pixb@, c=\the\pixc@." }
 }
 \def\readp@gepixs{ %讀入一組頁碼/圖片文件名
-  \ifeof\pixidxfil@ \relax % 結束了
+  \ifeof\pixidxfil@ \relax % 文件結束
   \else %
     \read\pixidxfil@ to \pixidxline %
     \expandafter\ifx\expandafter\relax\pixidxline %
