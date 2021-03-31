@@ -176,12 +176,15 @@
                \vss}} \fi %\ifmultifr@me
     \else %不需要加内框
         \ifodd\pageno % 奇數頁P5等加頁眉
-            \hbox{ % 内含三个框
+            \hbox{ %
                 \kern-12.8pt %
-                \vbox to 2pt{% 左小框
+                \vbox to 2pt{% 頁眉
                     \hbox to 36pt{%
                         \hfil\kern10pt\leftpagehd@r\hfil % 左页眉文字
-                    }\vss}} \fi %\ifodd
+                    }\vss}} %
+        \else % 偶數頁
+            \hbox{\kern-12.8pt\vbox to 2pt{\vss}} % 調整奇偶頁對齊
+        \fi %\ifodd
     \fi %\ifinnerframe 
   \fi %\ifframe
   \vskip2pt \vskip\upm@rgin %
@@ -457,6 +460,9 @@
     \advance\t@j by -\t@mpmod % 一葉中總行數減去已排滿的行數
     %\showthe\t@j \s@owthe\prevlinesrem@ined %
     \setrestedparsh@pe{#1}{\the\t@j}}
+%某些書（如一些曡字咒文）行高過大，需要臨時調整某些頁為少一行時，用下面兩個宏來强制斷頁
+\def\tcnewoddpage#1{\eject\setparshape#1{16}\TibPageLines=#1}%
+\def\tcnewevenpage#1{\eject\setrestedparsh@pe{#1}{#1}}%
 %簡單的單層標題方框
 \def\titlebox#1{\hbox{\vbox{
 \hrule height1pt\hbox{\vrule width1pt\kern4pc\vrule width1pt
