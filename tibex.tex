@@ -164,12 +164,12 @@
 \spaceskip=.07em
 \xspaceskip=.07em
 %
+% 把一个小于等于999的数转换成藏文
+%
+\newif\ifFifteenWaZur \FifteenWaZurtrue % 控制15转换为བཅྭོ་ལྔ，若爲false則爲བཅོ་ལྔ
 \newcount\c@n \newcount\c@m \newcount\c@t %
 %\newcount\centi \newcount\tens %
 \newif\ifspeci@ltens
-%
-% 把一个小于等于999的数转换成藏文
-%
 \def\tibnumber#1{
 \c@n=#1
 % calculate the centi digit
@@ -190,13 +190,15 @@
   % now t contains the tens digit
   \ifnum\c@n=0 % if the last digit is 0, the following Tseg is not needed either
     \ifcase\c@t\or བཅུ\or ཉི་ཤུ\or སུམ་ཅུ\or བཞི་བཅུ\or ལྔ་བཅུ\or དྲུག་ཅུ\or བདུན་ཅུ
-       \or བརྒྱད་ཅུ\or དགུ་བཅུ\fi\relax
-  \else
-    \ifnum\c@t=1
-        \ifnum\c@n=5 \speci@ltenstrue\fi
-        \ifnum\c@n=8 \speci@ltenstrue\fi
-        \ifspeci@ltens བཅྭོ་\else བཅུ་\fi
-    \fi
+       \or བརྒྱད་ཅུ\or དགུ་བཅུ\fi\relax %
+  \else %
+    \ifnum\c@t=1 %
+        \speci@ltensfalse %
+        \ifnum\c@n=5 \speci@ltenstrue\fi %
+        \ifnum\c@n=8 \speci@ltenstrue\fi %
+        \ifspeci@ltens %
+            \ifFifteenWaZur བཅྭོ་ \else བཅོ་ \fi %
+        \else བཅུ་\fi \fi %
     \ifcase\c@t\or \or ཉེར་\or སོ་\or ཞེ་\or ང་\or རེ་\or དོན་\or གྱ་\or གོ་\fi\relax
     \ifcase\c@n\or གཅིག\or གཉིས\or གསུམ\or བཞི\or ལྔ\or དྲུག\or བདུན\or བརྒྱད\or དགུ \fi\relax
   \fi
