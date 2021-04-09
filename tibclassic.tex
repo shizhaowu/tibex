@@ -3,8 +3,11 @@
 %排版藏文傳統長函書的包
 \parindent=0pt%
 %
-\def\orot@te#1{\setbox0=\hbox{#1}%
-  \special{x:gsave}\special{x:rotate 270}%
+\def\rrot@te#1{\setbox0=\hbox{#1}%
+  \special{x:gsave}\special{x:rotate 270}%rotate
+  \box0 \special{x:grestore}}
+\def\lrot@te#1{\setbox0=\hbox{#1}%
+  \special{x:gsave}\special{x:rotate 90}%rotate
   \box0 \special{x:grestore}}
 %
 \NoInterLetterSkip
@@ -72,7 +75,7 @@
 \def\tibpageno{\tibnumber} %設置頁碼風格，這裏是傳統的གཅིག་གཉིས་གསུམ།風格頁碼
 \def\leftpagehd@r{%奇数页左边页眉框中的文字
     \tmp@dim=\pb@xheight \advance\tmp@dim by -12pt %
-    \vbox to \tmp@dim{\hbox to 0pt{\orot@te{\hbox to \tmp@dim{ %左頁眉
+    \vbox to \tmp@dim{\hbox to 0pt{\rrot@te{\hbox to \tmp@dim{ %左頁眉
         \kern-8pt\pre_phdr \hfil%
         \putp@geno %輸出頁碼
         \c@m=\totalpages %
@@ -82,7 +85,7 @@
             \ifnum\c@m<2 ་བྱོན། \fi\fi %加在最後一頁
         \hfil\post_phdr\kern12pt}}%
     \hss}\vss} %左頁眉
-  }%
+}%
 % 控制是否加邊框及頁眉
 \newif\ifframe \framefalse % 是否加最外邊框
 \newif\ifinnerframe \innerframetrue % 是否不加内框
@@ -129,14 +132,24 @@
   \pixb@xwidth=\vsize %
   \advance\pixb@xwidth by 27pt %
   \advance\pixb@xwidth by-6pt \advance\pixb@xwidth by\maxdepth %\shrinkbox，+2pt之後的内框高
-  \multiply\pixb@xwidth by 3 \divide\pixb@xwidth by 4} % 3/4
+  \multiply\pixb@xwidth by 3 \divide\pixb@xwidth by 4 % 3/4
+}
+\def\RightNumericPageno{\null} % 缺省的不加右邊的數字頁碼
+%
+% 當需要在頁面右邊加阿拉伯數字頁碼時加上如下的定義
+%\def\RightNumericPageno{ %
+%    \ifframe \vskip-35mm \else \vskip -45mm \fi % P1-P4 與 P5以後的居中位移不同
+%    \smash { % 阿拉伯數字頁碼
+%        \hbox {\hskip\hsize \hskip17mm\lrot@te{\bigtenrm\folio} \hss} } % smash
+%} %
 %
 % Output routine
 %
+\def\footline{\hss\null\hss}
 \def\onepageout#1{%
- \shipout\vbox{%方框
+ \shipout\vbox{%
   %\message{ BG[pixpageno=\the\pixp@geno.] }
-  \ifframe%
+  \ifframe%方框
     \setboxsize %初始化計算方框大小的寄存器
     \offinterlineskip %
     \vskip-4pt \vskip-\upm@rgin %
@@ -188,9 +201,9 @@
     \fi %\ifinnerframe 
   \fi %\ifframe
   \vskip2pt \vskip\upm@rgin %
-  \vbox to \vsize{%页面内容
-      #1 \boxmaxdepth=\maxdepth }%
-  }%
+  \vbox to \vsize{ #1 \boxmaxdepth=\maxdepth } % 页面内容
+  \RightNumericPageno % 右邊的數字頁碼
+ } % shipout\vbox
   \nextp@gepixs % 讀入下一頁圖片索引
   %\message{ [pixpageno=\the\pixp@geno.] }
   %\showpixvars %
@@ -242,7 +255,7 @@
   \dimn=\pb@xheight \advance\dimn by-.25em %
   \hdroffs@t=-\dimn \divide\hdroffs@t by 2 %
   \vbox to 2cm{\vskip\hdroffs@t \hdr_up \hbox to 0pt{%
-    \orot@te{\hbox to \dimn{%
+    \rrot@te{\hbox to \dimn{%
       \pre_phdr\hfil%
       \putp@geno%
       \hfil\post_phdr}}\hss}\vss}}%
