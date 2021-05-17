@@ -158,8 +158,8 @@
        \vss}}%
     \ruleht@=4pt \shrinkpb@x \advance\pb@xheight by2pt%
     \ifinnerframe % 需要加内框
-        \ifodd\pageno \multiframetrue %
-        \else\ifnum\pageno=2 \multiframetrue %特例，用於P2不想用四重方框時
+        \ifodd\pageno \multifr@metrue %
+        \else\ifnum\pageno=2 \multifr@metrue %特例，用於P2不想用四重方框時
         \else\multifr@mefalse\fi\fi %
         %
         \ifmultifr@me % 奇數頁三内框
