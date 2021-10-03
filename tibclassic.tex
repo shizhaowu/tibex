@@ -481,6 +481,24 @@
 \hrule height1pt\hbox{\vrule width1pt\kern4pc\vrule width1pt
 \vbox{\kern9pt#1\kern9pt}\vrule width1pt\kern4pc\vrule width1pt}\hrule height1pt}
 }}
+%用於標題的多重外框 
+\def\DblFrameTitleBox#1#2#3{\null\vfil%控制上下居中
+  \vskip#1 %控制框中文字的上下位置
+  \vbox{ %
+    \hbox{\kern#2 %kern参数控制居中
+    \vbox{\quadrabox{\hbox{\Sam #3}}}} %標題文字
+  }
+  \vfil\null%控制上下居中
+}
+%用於P2、P3的多重外框 
+\def\PageFrameDblBox#1#2#3{ %畫頁邊框的宏，三個參數{#1控制邊框左右}{#2上下}{控制其後文字上下位置}
+\hbox{\kern-3.5pc\kern#1 %kern参数控制居中
+  \vbox to 0pt{%
+    \vskip#2 %
+    \quadrabox{\null} %
+    \vss}}\nointerlineskip%
+  \vskip#3 %控制第一行文字的位置正好在框內
+}
 %設置自動加在奇數頁首的雲頭符
 \newbox\pghdr%
 \TibHeaderBox=\pghdr%
