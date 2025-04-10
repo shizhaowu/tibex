@@ -76,7 +76,7 @@
 \def\leftp@gehdr{%奇数页左边页眉框中的文字
     \tmp@dim=\pb@xheight \advance\tmp@dim by -12pt %
     \vbox to \tmp@dim{\hbox to 0pt{\rrot@te{\hbox to \tmp@dim{ %左頁眉
-        \kern-8pt\pre_phdr \hfil%
+        \hdr_up\pre_phdr \hfil%
         \putp@geno %輸出頁碼
         \c@m=\totalpages %
         \ifnum\pageno>\c@m \relax%
@@ -311,11 +311,11 @@
   \hbox{\kern4pt\vbox to 1pt{%第二方框
     \dr@wbox{1pt}%
   \vss}}%
-  \calcinnerb@xsize %設置二三層框之間的間距
   \kern1.2pc % 頁碼
-    \ifpagehdr \vbox to 0pt{\vskip 1.7cm\hbox to 0pt{ %
+    \ifpagehdr \vbox to 0pt{\vskip 2.9cm\hbox to 0pt{ %
       \hskip 2pc\putp@gehdr\hss}\vss}\fi %
   \kern-1.2pc %
+  \calcinnerb@xsize %設置二三層框之間的間距
   \hbox{\kern5pt\kern\d@r%
     \vbox to 3pt{%第三方框
       \dr@wbox{1pt}%
