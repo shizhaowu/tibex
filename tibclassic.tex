@@ -1,4 +1,5 @@
 \input tibex
+\input colordvi
 \input pixidxfile
 %排版藏文傳統長函書的包
 \parindent=0pt%
@@ -149,6 +150,7 @@
 \def\onepageout#1{%
  \shipout\vbox{%
   %\message{ BG[pixpageno=\the\pixp@geno.] }
+  \special{color push Black}
   \ifframe%方框
     \setboxsize %初始化計算方框大小的寄存器
     \offinterlineskip %
@@ -200,6 +202,7 @@
         \fi %\ifodd
     \fi %\ifinnerframe 
   \fi %\ifframe
+  \special{color pop}
   \vskip2pt \vskip\upm@rgin %
   \vbox to \vsize{ #1 \boxmaxdepth=\maxdepth } % 页面内容
   \RightNumericPageno % 右邊的數字頁碼
@@ -229,9 +232,9 @@
   }%
 \def\calcinnerb@xsize{%根據\ifpixbox來設置二三層框間距 \d@r回傳橫移間距
   \ifpixbox % 帶圖片的四層框
-      \d@r=1.6pc \d@t=1.6pc%
-      \shrinkb@xsize{1.6pc}{1.6pc} %
-      \vskip 1.6pc
+      \d@r=2.4pc \d@t=2.4pc%
+      \shrinkb@xsize{2.4pc}{2.4pc} %
+      \vskip 2.4pc
   \else % 普通四層框
       \ifnum\quadboxgapstyle=1 %風格1，二、三框間上下空1/5
           \d@r=\pb@xheight \divide\d@r by 5 \d@t=\d@r %
@@ -293,12 +296,12 @@
 \def\setpixboxwidth{ %計算圖片框寬度放在\dt中
   \d@t=\pb@xheight \multiply\d@t by3 \divide\d@t by4 }%
 \def\rem@inedwidthpic{ %計算剩下的寬度存在d@r中
-  \d@r=\pb@xwidth \advance\d@r by-2.8pc %左第一框
+  \d@r=\pb@xwidth % \advance\d@r by-2.8pc %頁眉框
   \advance\d@r by -4pt %雙竪綫
   \setpixboxwidth \multiply\d@t by2 %兩個圖片框
   \advance\d@r by -\d@t %
   \advance\d@r by -4pt \advance\d@r by -4pt %左右各有一個雙竪綫
-  \advance\d@r by -2.7pt}%
+  \advance\d@r by 0.6pt}%
 %
 \newif\ifnopixb@x %
 \def\quadr@box#1{%四層方框的主宏
@@ -336,13 +339,14 @@
               %\tracingcommands=3 \tracingmacros=3
               \rem@inedwidth{#1} %
               \hskip\d@r \hfil %
-              \vbox{\vfil \box0 \vskip7pt\vfil}% 
+              \vbox{\vfil \box0 \vskip9pt\vfil}% 
               \hfil \hskip\d@r %
               \rmultivrul@s %
           \else %左右加圖片框
           %\message{'pageno=\the\pageno, pixp@ageno=\the\pixp@geno'}
-              \hskip1.8pc \ifpagehdr\putp@gehdr\fi \hskip1pc %頁眉
-              \dblvlin@ %左第一框帶頁眉
+              %\hskip1.8pc 
+                %\ifpagehdr\putp@gehdr\fi \hskip1pc %頁眉
+              %\dblvlin@ %左第一框帶頁眉
               \setpixboxwidth %計算圖片框寬度
               \vbox to \pb@xheight{\hbox to \d@t{\pboxlpic\hss}} %
               %\kern-.7pt
@@ -515,7 +519,7 @@
 %設置自動加在奇數頁首的雲頭符
 \newbox\pghdr%
 \TibHeaderBox=\pghdr%
-\def\header{{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}}%
+\def\header{{\Black{\SamChe ༄༅\kern.01pt།\hskip2.7em plus .5em minus.5em།}}}%
 \setbox\pghdr=\hbox{\header}%
 %用來給文檔最后加上空白頁
 \def\blankpage{\line{}\vfil\eject}%
